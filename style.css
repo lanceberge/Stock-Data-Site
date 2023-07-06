@@ -1,0 +1,24 @@
+/* Style for the tabs */
+.tab {
+    display: none;
+}
+
+.tab.active {
+    display: block;
+ }
+
+/* Style for the tab navigation */
+.tab-navigation {
+    display: none;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Style for the tab navigation items */
+.tab-navigation li {
+    display: inline;
+    margin-right: 10px;
+    cursor: pointer;
+    text-decoration: underline;
+}
