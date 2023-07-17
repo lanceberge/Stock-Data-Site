@@ -28,3 +28,10 @@ function search () {
 
   history.pushState({ query }, '', 'query')
 }
+
+function queryDB() {
+  // if the ticker is in the databas and if the stock hasn't changed by more than 5%
+
+  // else
+    // retrieve the data from the API and put it in the DB
+}

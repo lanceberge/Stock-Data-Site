@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
   <head>
     <title>Stock Data</title>
@@ -8,8 +7,8 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" type="text/css" href="styles/style.css" />
-    <script src="./main.js"></script>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}" />
+    <script src="{{ url_for('static',filename='main.js') }}"></script>
   </head>
 
   <body>
@@ -39,6 +38,26 @@
     <div id="Key Statistics" class="tab">
       <h2>Key Statistics</h2>
       <p>This is the content for Tab 1.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Flight ID</th>
+            <th>Origin</th>
+            <th>Destination</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key_stat in key_statistics %}
+          <tr>
+            <td>{{ key_stat[0] }}</td>
+            <td>{{ key_stat[1] }}</td>
+            <td>{{ key_stat[2] }}</td>
+            <td>{{ key_stat[3] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
 
     <div id="Balance Sheet" class="tab">
@@ -60,6 +79,5 @@
       <h2>Insider Trading</h2>
       <p>This is the content for Tab 5.</p>
     </div>
-
   </body>
 </html>
