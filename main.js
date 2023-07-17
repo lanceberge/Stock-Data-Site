@@ -1,20 +1,30 @@
-function switchTab (tabId) {
-    // Get all tab content elements
-    const tabs = document.getElementsByClassName('tab');
+const mainTab = 'Key Statistics'
 
-    // Remove active class from all tab content elements
-    for (let i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove('active');
-    }
+window.onpopstate = function (event) {
+  switchTab(event.state.tab)
+}
+
+function switchTab (tabId) {
+  // Get all tab content elements
+  const tabs = document.getElementsByClassName('tab')
+
+  // Remove active class from all tab content elements
+  for (let i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove('active')
+  }
 
   // Add active class to the selected tab content element
-    document.getElementById(tabId).classList.add('active');
+  document.getElementById(tabId).classList.add('active')
+
+  // history.pushState({tab: tabId}, "", )
 }
 
 function search () {
-    const query = document.getElementById('searchInput').value;
-    // switchTab('tab1');
+  const query = document.getElementById('searchInput').value
 
-    const tabNavigation = document.getElementById('tab-navigation');
-    tabNavigation.style.display = 'block';
+  switchTab(mainTab)
+  const tabNavigation = document.getElementById('tab-navigation')
+  tabNavigation.style.display = 'block'
+
+  history.pushState({ query }, '', 'query')
 }
