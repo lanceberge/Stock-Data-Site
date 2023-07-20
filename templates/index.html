@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <title>Stock Data</title>
@@ -7,7 +7,11 @@
       rel="stylesheet"
     />
 
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static',filename='styles/style.css') }}"
+    />
     <script src="{{ url_for('static',filename='main.js') }}"></script>
   </head>
 
@@ -25,57 +29,56 @@
       />
     </div>
 
-    <!-- Tab navigation -->
     <ul id="tab-navigation" class="tab-navigation">
-      <li onclick="switchTab('Key Statistics')">Key Statistics</li>
-      <li onclick="switchTab('Balance Sheet')">Balance Sheet</li>
-      <li onclick="switchTab('Earnings')">Earnings</li>
-      <li onclick="switchTab('Cash Flow')">Cash Flow</li>
-      <li onclick="switchTab('Insider Trading')">Insider Trading</li>
+      <li class="tab-link" data-tab="key_statistics">Key Statistics</li>
+      <li class="tab-link" data-tab="balance_sheet">Balance Sheet</li>
+      <li class="tab-link" data-tab="earnings">Earnings</li>
+      <li class="tab-link" data-tab="cash_flow">Cash Flow</li>
+      <li class="tab-link" data-tab="insider_trading">Insider Trading</li>
     </ul>
 
-    <!-- Tab content -->
-    <div id="Key Statistics" class="tab">
+    <div id="key_statistics" class="tab-content">
       <h2>Key Statistics</h2>
-      <p>This is the content for Tab 1.</p>
+      <p>This is the content for Key Statistics tab.</p>
       <table>
         <thead>
           <tr>
-            <th>Flight ID</th>
-            <th>Origin</th>
-            <th>Destination</th>
-            <th>Duration</th>
+            <!-- TODO Explanation on hover -->
+            <th>Price</th>
+            <th>Market Cap</th>
+            <th>Ev/EBITDA</th>
+            <th>Profit Margins</th>
+            <th>P/B</th>
+            <th>P/S</th>
+            <th>EPS</th>
+            <th>Return on Assets</th>
+            <th>Return on Equity</th>
+            <th>Dividend Yield</th>
+            <th>Free Cash Flow</th>
           </tr>
         </thead>
         <tbody>
-          {% for key_stat in key_statistics %}
-          <tr>
-            <td>{{ key_stat[0] }}</td>
-            <td>{{ key_stat[1] }}</td>
-            <td>{{ key_stat[2] }}</td>
-            <td>{{ key_stat[3] }}</td>
-          </tr>
-          {% endfor %}
+          <!-- Added Dynamically -->
         </tbody>
       </table>
     </div>
 
-    <div id="Balance Sheet" class="tab">
+    <div id="balance_sheet" class="tab-content">
       <h2>Balance Sheet</h2>
       <p>This is the content for Tab 2.</p>
     </div>
 
-    <div id="Earnings" class="tab">
+    <div id="earnings" class="tab-content">
       <h2>Earnings</h2>
       <p>This is the content for Tab 3.</p>
     </div>
 
-    <div id="Cash Flow" class="tab">
+    <div id="cash_flow" class="tab-content">
       <h2>Cash Flow</h2>
       <p>This is the content for Tab 4.</p>
     </div>
 
-    <div id="Insider Trading" class="tab">
+    <div id="insider_trading" class="tab-content">
       <h2>Insider Trading</h2>
       <p>This is the content for Tab 5.</p>
     </div>

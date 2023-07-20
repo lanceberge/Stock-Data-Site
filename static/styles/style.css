@@ -10,11 +10,11 @@
       align-items: center;
 }
 
-.tab {
+.tab-content {
     display: none;
 }
 
-.tab.active {
+.tab-content.active {
     display: block;
  }
 
@@ -25,7 +25,7 @@
     padding: 0;
 }
 
-.tab-navigation li {
+.tab-link {
     display: inline;
     margin-right: 10px;
     cursor: pointer;
