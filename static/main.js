@@ -1,4 +1,5 @@
 const mainTab = 'key_statistics'
+const fetchedData = {} // Object to store fetched data
 
 function switchTab (tabId) {
   const tabContents = document.querySelectorAll('.tab-content')
@@ -6,20 +7,15 @@ function switchTab (tabId) {
     tabContent.classList.remove('active')
   })
 
+  if (!fetchedData[tabId]) {
+    fetchDataForTab(tabId)
+  } else {
+    updateTabContent(tabId)
+  }
+
   // const tabs = document.getElementsByClassName('tab-content')
   document.getElementById(tabId).classList.add('active')
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-  const tabLinks = document.querySelectorAll('.tab-link')
-
-  tabLinks.forEach(tabLink => {
-    tabLink.addEventListener('click', function () {
-      const tabId = this.getAttribute('data-tab')
-      switchTab(tabId)
-    })
-  })
-})
 
 function search () {
   const query = document.getElementById('searchInput').value
@@ -28,8 +24,6 @@ function search () {
   const tabNavigation = document.getElementById('tab-navigation')
   tabNavigation.style.display = 'block'
 }
-
-const fetchedData = {} // Object to store fetched data
 
 async function fetchDataForTab (tabId) {
   const response = await fetch(`/${tabId}`)
@@ -59,15 +53,12 @@ function updateTabContent (tabId) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  const tabs = document.querySelectorAll('.tab-link')
-  tabs.forEach(tab => {
-    tab.addEventListener('click', function () {
+  const tabLinks = document.querySelectorAll('.tab-link')
+
+  tabLinks.forEach(tabLink => {
+    tabLink.addEventListener('click', function () {
       const tabId = this.getAttribute('data-tab')
-      if (!fetchedData[tabId]) {
-        fetchDataForTab(tabId)
-      } else {
-        updateTabContent(tabId)
-      }
+      switchTab(tabId)
     })
   })
 })
