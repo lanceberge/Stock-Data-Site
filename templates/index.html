@@ -24,7 +24,6 @@
         class="search-bar"
         id="search_ticker"
         placeholder="Search for a ticker, ex. AAPL"
-        onkeydown="if(event.keyCode === 13) search()"
         autofocus
       />
     </div>
@@ -36,6 +35,10 @@
       <li class="tab-link" data-tab="cash_flow">Cash Flow</li>
       <li class="tab-link" data-tab="insider_trading">Insider Trading</li>
     </ul>
+
+    <div id="not_found" class="tab-content">
+      <p>This ticker could not be found</p>
+    </div>
 
     <div id="key_statistics" class="tab-content">
       <h2>Key Statistics</h2>

@@ -26,22 +26,22 @@ def key_statistics():
 
 @app.route('/balance_sheet')
 def balance_sheet():
-    pass
+    return jsonify([])
 
 
 @app.route('/earnings')
 def earnings():
-    pass
+    return jsonify([])
 
 
 @app.route('/cash_flow')
 def cash_flow():
-    pass
+    return jsonify([])
 
 
 @app.route('/insider_trading')
 def insider_trading():
-    pass
+    return jsonify([])
 
 
 if __name__ == '__main__':
