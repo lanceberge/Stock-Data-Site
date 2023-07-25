@@ -1,8 +1,13 @@
 const mainTab = 'key_statistics'
 let fetchedData = {} // Object to store fetched data
 const tabs = ['key_statistics', 'balance_sheet', 'earnings', 'cash_flow', 'insider_trading']
+let ticker = undefined
 
-async function switchTab (tabId, ticker) {
+async function switchTab (tabId) {
+  if (!ticker) {
+    return
+  }
+
   await fetchDataForTab(tabId, ticker)
 
   const tabContents = document.querySelectorAll('.tab-content')
@@ -11,30 +16,25 @@ async function switchTab (tabId, ticker) {
   })
 
   if (fetchedData[tabId].length == 0) {
-    document.getElementById("not_found").classList.add('active')
+    document.getElementById('not_found').classList.add('active')
     return
   }
 
-  document.getElementById(tabId).classList.add('active')
-  const tabContent = document.getElementById(tabId)
-  const tableBody = tabContent.querySelector('tbody')
+  if (tabId == 'key_statistics') {
+    const tabContent = document.getElementById(tabId)
+    tabContent.classList.add('active')
 
-  tableBody.innerHTML = ''
-
-  fetchedData[tabId].forEach(row => {
-    const tableRow = document.createElement('tr')
-    tableRow.innerHTML = `
-          <td>${row[0]}</td>
-          <td>${row[1]}</td>
-          <td>${row[2]}</td>
-          <td>${row[3]}</td>
-        `
-    tableBody.appendChild(tableRow)
-  })
+    const table = tabContent.querySelector('table')
+    const data = fetchedData[tabId]
+    const rows = table.querySelectorAll('tr')
+    data.forEach((value, i) => {
+      rows[i].querySelector('td').innerHTML = value
+    })
+  }
 }
 
 async function search () {
-  const ticker = document.getElementById('search_ticker').value
+  ticker = document.getElementById('search_ticker').value
   if (!ticker) {
     return
   }

@@ -21,7 +21,7 @@ def key_statistics():
     data = cursor.fetchall()
     cursor.close()
     conn.close()
-    return jsonify(data)
+    return jsonify(data[0])
 
 
 @app.route('/balance_sheet')

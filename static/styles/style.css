@@ -39,3 +39,14 @@
   margin-left: 10px;
   background-color: #eeeeee;
 }
+
+.table.vertical th {
+  text-align: right;
+  padding: 5px;
+}
+
+/* Apply styles to the table body */
+.table.vertical td {
+  text-align: left;
+  padding: 5px;
+}
