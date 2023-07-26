@@ -4,7 +4,7 @@
 .title-box {
   width: 100%;
   height: 4vh;
-  background-color: #f2f2f2;
+  background-color: #f9f9f9;
   display: flex;
   padding-left: 4%;
   align-items: center;
@@ -37,7 +37,7 @@
   border-radius: 10px;
   padding: 10px;
   margin-left: 10px;
-  background-color: #eeeeee;
+  background-color: #f9f9f9;
 }
 
 table {
@@ -45,13 +45,14 @@ table {
 }
 
 th {
-    padding: 0.5rem;
+  padding: 0.5rem;
   background: #ffcc99;
-  border: 1px solid black;
+  border: 1px solid #ccc;
 }
 
 td {
-  border: 1px solid black;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
   padding: 0.5rem;
 }
 
@@ -59,7 +60,6 @@ td {
   text-align: right;
 }
 
-/* Apply styles to the table body */
 .table.vertical td {
   text-align: left;
 }
@@ -72,19 +72,18 @@ td {
 .tooltip-info {
   position: absolute;
   left: 0;
-  top: 0;
-  transform: translateY(70%) scale(0);
-  transition: transform 0.1s ease-in;
+  font-weight: normal;
   transform-origin: left;
-  display: inline;
-  background: white;
-  z-index: 20;
+  display: none;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  z-index: 1;
   min-width: 100%;
-  padding: 1rem;
-  border: 1px solid black;
+  padding: 5px;
   color: black;
+  border-radius: 5px;
 }
 
 .tooltip-trigger:hover span {
-  transform: translateY(70%) scale(1);
+  display: block;
 }
