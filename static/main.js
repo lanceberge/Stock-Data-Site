@@ -39,9 +39,6 @@ async function search () {
     return
   }
 
-  const tabNavigation = document.getElementById('tab-navigation')
-  tabNavigation.style.display = 'block'
-
   // reset fetchedData since a new ticker is provided
   fetchedData = {}
 

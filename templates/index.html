@@ -17,15 +17,17 @@
 
   <body>
     <div class="title-box">
-      <h2>Title</h2>
+    <h1>Title</h1>
 
-      <input
-        type="text"
-        class="search-bar"
-        id="search_ticker"
-        placeholder="Search for a ticker, ex. AAPL"
-        autofocus
-      />
+      <div class="search-container">
+        <input
+          type="text"
+          class="search-bar"
+          id="search_ticker"
+          placeholder="Search for a ticker, ex. AAPL"
+          autofocus
+        />
+      </div>
     </div>
 
     <ul id="tab-navigation" class="tab-navigation">
@@ -36,159 +38,157 @@
       <li class="tab-link" data-tab="insider_trading">Insider Trading</li>
     </ul>
 
-    <div class="popup-container">
-      <button class="popup-trigger">Hover me!</button>
-      <div class="popup-content">This is the popup box content.</div>
-    </div>
-    <div id="not_found" class="tab-content">
-      <p>This ticker could not be found</p>
-    </div>
+    <div class="tab-container">
+      <div id="not_found" class="tab-content">
+        <p>This ticker could not be found</p>
+      </div>
 
-    <div id="key_statistics" class="tab-content">
-      <h2>Key Statistics</h2>
-      <p>This is the content for Key Statistics tab.</p>
+      <div id="key_statistics" class="tab-content">
+        <h2>Key Statistics</h2>
+        <p>This is the content for Key Statistics tab.</p>
 
-      <table class="table vertical">
-        <tr>
-          <th class="tooltip-trigger">
-            Price
-            <span class="tooltip-info">Price Per Share</span>
-          </th>
-          <td></td>
-        </tr>
-        <tr>
-          <th class="tooltip-trigger">
-            Market Cap
-            <span class="tooltip-info">
-              <a
-                href="https://www.investopedia.com/terms/m/marketcapitalization.asp"
-                target="_blank"
-              >
-                Total value of the outstanding shares
-              </a>
-            </span>
-          </th>
-          <td></td>
-        </tr>
-        <tr>
-          <th class="tooltip-trigger">
-            EV/EBITDA
-            <span class="tooltip-info">
-              <a
-                href="https://www.investopedia.com/terms/e/ev-ebitda.asp"
-                target="_blank"
-              >
-                Enterprise Value / EBITDA
-              </a>
-            </span>
-          </th>
-          <td></td>
-        </tr>
-        <tr>
-          <th class="tooltip-trigger">
-            Profit Margins
-            <span class="tooltip-info">
-              <a
-                href="https://www.investopedia.com/terms/p/profitmargin.asp"
-                target="_blank"
-              >
-                Percentage of revenue kept as profit
-              </a>
-            </span>
-          </th>
-          <td></td>
-        </tr>
-        <tr>
-          <th class="tooltip-trigger">
-            P/B
-            <span class="tooltip-info">
-              <a
-                href="https://www.investopedia.com/terms/p/price-to-bookratio.asp"
-                target="_blank"
-              >
-                Market Cap / Book Value
-              </a>
-            </span>
-          </th>
-          <td></td>
-        </tr>
-        <tr>
-          <th class="tooltip-trigger">
-            P/S
-            <span class="tooltip-info">
-              <a
-                href="https://www.investopedia.com/terms/p/price-to-salesratio.asp"
-                target="_blank"
-              >
-                Market Cap / Total Sales
-              </a>
-            </span>
-          </th>
-          <td></td>
-        </tr>
-        <tr>
-          <th class="tooltip-trigger">
-            EPS
-            <span class="tooltip-info">
-              <a
-                href="https://www.investopedia.com/terms/e/eps.asp"
-                target="_blank"
-              >
-                Net profit / shares outstanding
-              </a>
-            </span>
-          </th>
-          <td></td>
-        </tr>
-        <tr>
-          <th class="tooltip-trigger">
-            Dividend Yield
-            <span class="tooltip-info">
-              <a
-                href="https://www.investopedia.com/terms/d/dividendyield.asp"
-                target="_blank"
-              >
-                % Return from the company's dividend
-              </a>
-            </span>
-          </th>
-          <td></td>
-        </tr>
-        <tr>
-          <th class="tooltip-trigger">
-            Free Cash Flow
-            <span class="tooltip-info">
-              <a
-                href="https://www.investopedia.com/terms/f/freecashflow.asp"
-                target="_blank"
-              >
-                Incoming cash - outgoing cash
-              </a>
-            </span>
-          </th>
-          <td></td>
-        </tr>
-      </table>
-    </div>
+        <table class="table vertical">
+          <tr>
+            <th class="tooltip-trigger">
+              Price
+              <span class="tooltip-info">Price Per Share</span>
+            </th>
+            <td></td>
+          </tr>
+          <tr>
+            <th class="tooltip-trigger">
+              Market Cap
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/m/marketcapitalization.asp"
+                  target="_blank"
+                >
+                  Total value of the outstanding shares
+                </a>
+              </span>
+            </th>
+            <td></td>
+          </tr>
+          <tr>
+            <th class="tooltip-trigger">
+              EV/EBITDA
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/e/ev-ebitda.asp"
+                  target="_blank"
+                >
+                  Enterprise Value / EBITDA
+                </a>
+              </span>
+            </th>
+            <td></td>
+          </tr>
+          <tr>
+            <th class="tooltip-trigger">
+              Profit Margins
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/p/profitmargin.asp"
+                  target="_blank"
+                >
+                  Percentage of revenue kept as profit
+                </a>
+              </span>
+            </th>
+            <td></td>
+          </tr>
+          <tr>
+            <th class="tooltip-trigger">
+              P/B
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/p/price-to-bookratio.asp"
+                  target="_blank"
+                >
+                  Market Cap / Book Value
+                </a>
+              </span>
+            </th>
+            <td></td>
+          </tr>
+          <tr>
+            <th class="tooltip-trigger">
+              P/S
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/p/price-to-salesratio.asp"
+                  target="_blank"
+                >
+                  Market Cap / Total Sales
+                </a>
+              </span>
+            </th>
+            <td></td>
+          </tr>
+          <tr>
+            <th class="tooltip-trigger">
+              EPS
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/e/eps.asp"
+                  target="_blank"
+                >
+                  Net profit / shares outstanding
+                </a>
+              </span>
+            </th>
+            <td></td>
+          </tr>
+          <tr>
+            <th class="tooltip-trigger">
+              Dividend Yield
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/d/dividendyield.asp"
+                  target="_blank"
+                >
+                  % Return from the company's dividend
+                </a>
+              </span>
+            </th>
+            <td></td>
+          </tr>
+          <tr>
+            <th class="tooltip-trigger">
+              Free Cash Flow
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/f/freecashflow.asp"
+                  target="_blank"
+                >
+                  Incoming cash - outgoing cash
+                </a>
+              </span>
+            </th>
+            <td></td>
+          </tr>
+        </table>
+      </div>
 
-    <div id="balance_sheet" class="tab-content">
-      <h2>Balance Sheet</h2>
-      <p>This is the content for Tab 2.</p>
-    </div>
+      <div id="balance_sheet" class="tab-content">
+        <h2>Balance Sheet</h2>
+        <p>This is the content for Tab 2.</p>
+      </div>
 
-    <div id="earnings" class="tab-content">
-      <h2>Earnings</h2>
-      <p>This is the content for Tab 3.</p>
-    </div>
+      <div id="earnings" class="tab-content">
+        <h2>Earnings</h2>
+        <p>This is the content for Tab 3.</p>
+      </div>
 
-    <div id="cash_flow" class="tab-content">
-      <h2>Cash Flow</h2>
-      <p>This is the content for Tab 4.</p>
-    </div>
+      <div id="cash_flow" class="tab-content">
+        <h2>Cash Flow</h2>
+        <p>This is the content for Tab 4.</p>
+      </div>
 
-    <div id="insider_trading" class="tab-content">
-      <h2>Insider Trading</h2>
-      <p>This is the content for Tab 5.</p>
+      <div id="insider_trading" class="tab-content">
+        <h2>Insider Trading</h2>
+        <p>This is the content for Tab 5.</p>
+      </div>
     </div>
   </body>
 </html>
