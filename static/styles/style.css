@@ -1,6 +1,7 @@
 :root {
   --light-gray: #f9f9f9;
-  --dark-gray: #ccc;
+  --medium-gray: #eaeaea;
+  --dark-gray: #dbdbdb;
   --light-blue: #2185d0;
   --dark-blue: #002ead;
   --dark-navy: #002060;
@@ -23,6 +24,7 @@ body {
   align-items: center;
   margin: 0;
   padding: 10px;
+  padding-left: 30px;
 }
 
 .search-container {
@@ -83,8 +85,12 @@ body {
   border-radius: 5px;
 }
 
-.tab-link:hover {
-  background-color: var(--dark-gray);
+.tab-link.active {
+    background-color: var(--dark-gray);
+}
+
+.tab-link:not(.active):hover {
+  background-color: var(--medium-gray);
 }
 
 table {

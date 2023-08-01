@@ -1,18 +1,26 @@
 const mainTab = 'key_statistics'
-let fetchedData = {} // Object to store fetched data
-const tabs = ['key_statistics', 'balance_sheet', 'earnings', 'cash_flow', 'insider_trading']
-let ticker = undefined
+let activeTab = mainTab
+let fetchedData = {}
+let ticker
 
 async function switchTab (tabId) {
-  if (!ticker) {
-    return
+  if (ticker) {
+    await fetchDataForTab(tabId, ticker)
   }
-
-  await fetchDataForTab(tabId, ticker)
 
   const tabContents = document.querySelectorAll('.tab-content')
   tabContents.forEach(tabContent => {
     tabContent.classList.remove('active')
+  })
+
+  activeTab = tabId
+  const tabLinks = document.querySelectorAll('.tab-link')
+  tabLinks.forEach(link => {
+    if (link.getAttribute('data-tab') == tabId) {
+      link.classList.add('active')
+    } else {
+      link.classList.remove('active')
+    }
   })
 
   if (fetchedData[tabId].length == 0) {
@@ -20,6 +28,7 @@ async function switchTab (tabId) {
     return
   }
 
+  // TODO set up data for other tabs
   if (tabId == 'key_statistics') {
     const tabContent = document.getElementById(tabId)
     tabContent.classList.add('active')
@@ -42,7 +51,7 @@ async function search () {
   // reset fetchedData since a new ticker is provided
   fetchedData = {}
 
-  switchTab(mainTab, ticker)
+  switchTab(activeTab, ticker)
 }
 
 async function fetchDataForTab (tabId, ticker) {

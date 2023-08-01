@@ -21,6 +21,9 @@ def key_statistics():
     data = cursor.fetchall()
     cursor.close()
     conn.close()
+    if len(data) == 0:
+        return jsonify([])
+
     return jsonify(data[0])
 
 
