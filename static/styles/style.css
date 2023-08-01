@@ -17,25 +17,28 @@ body {
 }
 
 .title-box {
-  height: 4vh;
   background-color: var(--light-blue);
   display: flex;
   color: white;
   align-items: center;
-  margin: 0;
-  padding: 10px;
   padding-left: 30px;
 }
 
-.search-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.title-box h1 {
   flex: 1;
 }
 
+.title-box-right {
+  flex: 1;
+}
+
+.search-container {
+  width: 50%;
+  text-align: center;
+}
+
 .search-bar {
-  width: 40%;
+  width: 90%;
   padding: 10px;
   margin-left: 10px;
   background-color: white;
@@ -86,7 +89,7 @@ body {
 }
 
 .tab-link.active {
-    background-color: var(--dark-gray);
+  background-color: var(--dark-gray);
 }
 
 .tab-link:not(.active):hover {
