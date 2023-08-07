@@ -3,6 +3,7 @@ import sqlite3
 from urllib.request import urlopen
 import certifi
 import json
+from util.number_formatting import millify, percentify, two_decimals
 
 app = Flask(__name__)
 base_url = "https://financialmodelingprep.com/api/v3/"
@@ -42,23 +43,27 @@ def key_statistics():
     # return jsonify(data[0])
 
     # join the price dictionary and key statistics dictionary
-    data_dict = retrieve_from_api("quote-short", ticker) | retrieve_from_api(
-        "key-metrics", ticker
+    # TODO all key_metrics are TTM
+    key_metrics = retrieve_from_api("key-metrics", ticker)
+    key_metrics.pop("marketCap")
+    data_dict = (
+        retrieve_from_api("quote-short", ticker)
+        | key_metrics
+        | retrieve_from_api("market-capitalization", ticker)
     )
 
     # TODO profit margins, EPS, FCF
-    name_to_api_name = {
-        "Price": "price",
-        "Market Cap": "marketCap",
-        "EV/EBITDA": "enterpriseValueOverEBITDA",
-        "P/E": "peRatio",
-        "P/B": "pbRatio",
-        "P/S": "priceToSalesRatio",
-        "ROIC": "roic",
-    }
+    data = {}
+    data["Price"]      = millify(data_dict["price"])
+    data["Market Cap"] = millify(data_dict["marketCap"])
+    data["EV/EBITDA"]  = millify(data_dict["enterpriseValueOverEBITDA"])
+    data["P/E"]        = two_decimals(data_dict["peRatio"])
+    data["P/B"]        = two_decimals(data_dict["pbRatio"])
+    data["P/S"]        = two_decimals(data_dict["priceToSalesRatio"])
+    data["ROIC"]       = percentify(data_dict["roic"])
 
-    data = {k: data_dict[name_to_api_name[k]] for k in name_to_api_name.keys()}
     return json.dumps(data)
+    # TODO data into database AFTER it's been sent to the frontend
 
 
 @app.route("/balance_sheet")

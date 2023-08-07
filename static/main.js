@@ -39,7 +39,7 @@ async function switchTab (tabId) {
       const th = table.querySelector(`th[id="${key}"]`) // Select the th with the specified id (key)
 
       if (th) {
-        const td = th.nextElementSibling // Select the td element following the th
+        const td = th.nextElementSibling
         td.textContent = data[key]
       }
     }
