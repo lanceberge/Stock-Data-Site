@@ -1,7 +1,23 @@
 from flask import Flask, render_template, jsonify, request
 import sqlite3
+from urllib.request import urlopen
+import certifi
 
 app = Flask(__name__)
+base_url = "https://financialmodelingprep.com/api/v3/"
+
+
+api_key = None
+with open(".api_key", "r") as f:
+    api_key = f.read()
+
+
+def retrieve_from_api(metric, ticker):
+    url = f"{base_url}{metric}/{ticker}?apikey={api_key}"
+    response = urlopen(url, cafile=certifi.where())
+    data = response.read().decode("utf-8")
+    return data
+
 
 @app.route('/')
 def index():
