@@ -35,10 +35,14 @@ async function switchTab (tabId) {
 
     const table = tabContent.querySelector('table')
     const data = fetchedData[tabId]
-    const rows = table.querySelectorAll('tr')
-    data.forEach((value, i) => {
-      rows[i].querySelector('td').innerHTML = value
-    })
+    for (const key in data) {
+      const th = table.querySelector(`th[id="${key}"]`) // Select the th with the specified id (key)
+
+      if (th) {
+        const td = th.nextElementSibling // Select the td element following the th
+        td.textContent = data[key]
+      }
+    }
   }
 }
 
