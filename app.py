@@ -12,21 +12,32 @@ with open(".api_key", "r") as f:
     api_key = f.read()
 
 
-def retrieve_from_api(metric, ticker):
+def retrieve_from_api(metric, ticker, args=None):
     url = f"{base_url}{metric}/{ticker}?apikey={api_key}"
+
+    if args:
+        args = "&".join(args)
+        url = f"{base_url}{metric}/{ticker}?{args}&apikey={api_key}"
+
+    print(url)
 
     # TODO cafile is deprecated
     response = urlopen(url, cafile=certifi.where())
     data = response.read().decode("utf-8")
 
     # TODO error handling for empty data or erroneous response
-    data_dict = json.loads(data)[0]
+    data_dict = json.loads(data)
     return data_dict
 
 
 @app.route("/key_statistics")
 def key_statistics():
     ticker = request.args.get("ticker")
+
+    # TODO
+    # Load stock price and date from the database
+    # If the Price has changed by 5% or if there have been recent earnings/filings, then load data from API
+    # otherwise, load everything from the database
 
     # query = f"SELECT * FROM test WHERE id={ticker}"
     # TODO if data is too old or nonexistent, call API and replace data
@@ -42,33 +53,59 @@ def key_statistics():
 
     # return jsonify(data[0])
 
-    # join the price dictionary and key statistics dictionary
-    # TODO all key_metrics are TTM
-    key_metrics = retrieve_from_api("key-metrics", ticker)
-    key_metrics.pop("marketCap")
     data_dict = (
-        retrieve_from_api("quote-short", ticker)
-        | key_metrics
-        | retrieve_from_api("market-capitalization", ticker)
+        retrieve_from_api("quote-short", ticker)[0]
+        | retrieve_from_api("key-metrics-ttm", ticker)[0]
+        | retrieve_from_api("market-capitalization", ticker)[0]
     )
 
     # TODO profit margins, EPS, FCF
     data = {}
-    data["Price"]      = millify(data_dict["price"])
+    data["Price"] = millify(data_dict["price"])
     data["Market Cap"] = millify(data_dict["marketCap"])
-    data["EV/EBITDA"]  = millify(data_dict["enterpriseValueOverEBITDA"])
-    data["P/E"]        = two_decimals(data_dict["peRatio"])
-    data["P/B"]        = two_decimals(data_dict["pbRatio"])
-    data["P/S"]        = two_decimals(data_dict["priceToSalesRatio"])
-    data["ROIC"]       = percentify(data_dict["roic"])
+    data["EV/EBITDA"] = millify(data_dict["enterpriseValueOverEBITDATTM"])
+    data["P/E"] = two_decimals(data_dict["peRatioTTM"])
+    data["P/B"] = two_decimals(data_dict["pbRatioTTM"])
+    data["P/S"] = two_decimals(data_dict["priceToSalesRatioTTM"])
+    data["ROIC"] = percentify(data_dict["roicTTM"])
+    data["Dividend Yield"] = percentify(data_dict["dividendYieldTTM"])
+    data["Payout Ratio"] = percentify(data_dict["payoutRatioTTM"])
 
     return json.dumps(data)
+
+
+@app.after_request
+def after_key_statistics(response):
     # TODO data into database AFTER it's been sent to the frontend
+    return response
 
 
 @app.route("/balance_sheet")
 def balance_sheet():
-    return json.dumps([])
+    # TODO quarterly
+    ticker = request.args.get("ticker")
+    balance_sheet = retrieve_from_api(
+        "balance-sheet-statement", ticker, args=["limit=120"]
+    )
+
+    data = []
+
+    first_year_cash_value = balance_sheet_data[-1]["cashAndCashEquivalents"]
+    thousands_base = get_thousands_base(thousands_base)
+
+    for balance_sheet_data in balance_sheet[::-1]:
+        data_for_year = {}
+
+        data_for_year["Date"] = "/".join(balance_sheet_data["date"].split("-")[1:])
+        data_for_year["Cash and Cash Equivalents"] = millify(
+            balance_sheet_data["cashAndCashEquivalents"],
+            thousands_base=thousands_base,
+            include_suffix=False,
+        )
+
+        data.append(data_for_year)
+
+    return json.dumps(data)
 
 
 @app.route("/earnings")
