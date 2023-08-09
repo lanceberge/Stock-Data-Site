@@ -3,7 +3,7 @@ import sqlite3
 from urllib.request import urlopen
 import certifi
 import json
-from util.number_formatting import millify, percentify, two_decimals
+from util.number_formatting import *
 
 app = Flask(__name__)
 base_url = "https://financialmodelingprep.com/api/v3/"
@@ -90,20 +90,37 @@ def balance_sheet():
 
     data = []
 
-    first_year_cash_value = balance_sheet_data[-1]["cashAndCashEquivalents"]
-    thousands_base = get_thousands_base(thousands_base)
+    first_year_cash_value = balance_sheet[-1]["cashAndCashEquivalents"]
+    thousands_base = get_thousands_base(first_year_cash_value)
+    format_data = lambda n : millify(n, thousands_base=thousands_base, include_suffix=False)
+
+    # TODO pass base to frontend
 
     for balance_sheet_data in balance_sheet[::-1]:
-        data_for_year = {}
+        data_for_period = {}
 
-        data_for_year["Date"] = "/".join(balance_sheet_data["date"].split("-")[1:])
-        data_for_year["Cash and Cash Equivalents"] = millify(
-            balance_sheet_data["cashAndCashEquivalents"],
-            thousands_base=thousands_base,
-            include_suffix=False,
-        )
+        date = balance_sheet_data["date"].split("-")
+        month, year = date[1], date[0][-2:]
+        data_for_period["Date"] = month+"/"+year
+        data_for_period["Cash and Cash Equivalents"] = format_data(
+            balance_sheet_data["cashAndCashEquivalents"])
 
-        data.append(data_for_year)
+        data_for_period["Short Term Investments"] = format_data(
+            balance_sheet_data["shortTermInvestments"])
+
+        data_for_period["Receivables"] = format_data(
+            balance_sheet_data["netReceivables"])
+
+        data_for_period["Inventories"] = format_data(
+            balance_sheet_data["inventory"])
+
+        data_for_period["Current Assets - Other"] = format_data(
+            balance_sheet_data["otherCurrentAssets"])
+
+        data_for_period["Total Current Assets"] = format_data(
+            balance_sheet_data["totalCurrentAssets"])
+
+        data.append(data_for_period)
 
     return json.dumps(data)
 
