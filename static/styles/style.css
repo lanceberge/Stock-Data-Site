@@ -102,24 +102,23 @@ table {
 
 th {
   padding: 0.5rem;
-  background: var(--dark-navy);
-  border: 1px solid var(--dark-gray);
-  color: white;
   font-weight: normal;
 }
 
 td {
-  border: 1px solid var(--dark-gray);
-  background: var(--light-gray);
   padding: 0.5rem;
 }
 
+tr {
+    border-bottom: 1px solid var(--dark-gray);
+}
+
 .table.vertical th {
-  text-align: right;
+  text-align: left;
 }
 
 .table.vertical td {
-  text-align: left;
+  text-align: right;
 }
 
 .tooltip-trigger {
