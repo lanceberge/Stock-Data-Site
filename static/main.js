@@ -8,7 +8,7 @@ const renderTabMap = {
 }
 
 async function switchTab (tabId) {
-  if (ticker) {
+  if (ticker && !fetchedData[tabId]) {
     await fetchDataForTab(tabId, ticker)
   }
 
@@ -75,6 +75,9 @@ function renderBalanceSheet () {
 
   // TODO for each table in tabContent
   for (const row of tabContent.querySelectorAll('#current_assets tr')) {
+    for (const td of row.querySelectorAll('td')) {
+      td.remove()
+    }
     const key = row.querySelector('th').textContent
 
     for (const column of data) {
