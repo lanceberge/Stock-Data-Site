@@ -32,7 +32,7 @@ def millify(n, thousands_base=None, include_suffix=True):
         rstring = "{:,.2f}".format(n)
 
     if include_suffix:
-        return rstring.append(millnames[millnames_idx])
+        return rstring + millnames[millnames_idx]
 
     return rstring
 
