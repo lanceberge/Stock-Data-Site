@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request
 import sqlite3
-from urllib.request import urlopen
-import certifi
+import requests
 import json
 from util.number_formatting import *
 
@@ -12,6 +11,7 @@ with open(".api_key", "r") as f:
     api_key = f.read()
 
 
+# TODO error handling for empty data or erroneous response
 def retrieve_from_api(metric, ticker, args=None):
     url = f"{base_url}{metric}/{ticker}?apikey={api_key}"
 
@@ -19,14 +19,8 @@ def retrieve_from_api(metric, ticker, args=None):
         args = "&".join(args)
         url = f"{base_url}{metric}/{ticker}?{args}&apikey={api_key}"
 
-    print(url)
-
-    # TODO cafile is deprecated
-    response = urlopen(url, cafile=certifi.where())
-    data = response.read().decode("utf-8")
-
-    # TODO error handling for empty data or erroneous response
-    data_dict = json.loads(data)
+    data = requests.get(url)
+    data_dict = json.loads(data.text)
     return data_dict
 
 
