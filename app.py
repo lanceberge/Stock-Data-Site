@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, g
 import sqlite3
 import requests
 import json
@@ -24,28 +24,49 @@ def retrieve_from_api(metric, ticker, args=None):
     return data_dict
 
 
+# TODO transition to MySQL
+def execute_query(query):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute(query)
+    # data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    # if len(data) == 0:
+    #     return jsonify([])
+
+    # # TODO if any of these values are empty, call API
+    # return jsonify(data[0])
+
+
+def add_to_database(data, database):
+    # if data is 2d, ex. if it's a dict
+    # insert into the respective columns
+
+    # if it's a list of dicts, idek
+
+    # TODO if key exists in data, update it
+
+    columns = ", ".join(data.keys())
+    values = ", ".join(data.values())
+    query = f"INSERT INTO {database} ({columns}) VALUES ({values})"
+    execute_query(query)
+
+
+def retrieve_from_database(ticker, database):
+    pass
+
+
 @app.route("/key_statistics")
 def key_statistics():
     ticker = request.args.get("ticker")
 
-    # TODO
-    # Load stock price and date from the database
-    # If the Price has changed by 5% or if there have been recent earnings/filings, then load data from API
-    # otherwise, load everything from the database
-
-    # query = f"SELECT * FROM test WHERE id={ticker}"
     # TODO if data is too old or nonexistent, call API and replace data
 
-    # conn = sqlite3.connect('database.db')
-    # cursor = conn.cursor()
-    # cursor.execute(query)
-    # data = cursor.fetchall()
-    # cursor.close()
-    # conn.close()
-    # if len(data) == 0:
-    #     return jsonify([])
-
-    # return jsonify(data[0])
+    # TODO Load stock price and date from the database
+    # If the Price has changed by 5% or if there have been recent earnings/filings, then load data from API
+    # otherwise, load everything from the database
 
     data_dict = (
         retrieve_from_api("quote-short", ticker)[0]
@@ -65,6 +86,9 @@ def key_statistics():
     data["Dividend Yield"] = percentify(data_dict["dividendYieldTTM"])
     data["Payout Ratio"] = percentify(data_dict["payoutRatioTTM"])
 
+    g.ticker = ticker
+    g.data = data
+
     return json.dumps(data)
 
 
@@ -82,40 +106,40 @@ def balance_sheet():
         "balance-sheet-statement", ticker, args=["limit=120"]
     )
 
-    data = []
-
     first_year_cash_value = balance_sheet[-1]["cashAndCashEquivalents"]
     thousands_base = get_thousands_base(first_year_cash_value)
-    format_data = lambda n : millify(n, thousands_base=thousands_base, include_suffix=False)
+    format_data = lambda n: millify(
+        n, thousands_base=thousands_base, include_suffix=False
+    )
 
+    data = {}
+    data["Base"] = thousands_base
     # TODO pass base to frontend
+
+    entry_data = []
 
     for balance_sheet_data in balance_sheet[::-1]:
         data_for_period = {}
 
         date = balance_sheet_data["date"].split("-")
         month, year = date[1], date[0][-2:]
-        data_for_period["Date"] = month+"/"+year
-        data_for_period["Cash and Cash Equivalents"] = format_data(
-            balance_sheet_data["cashAndCashEquivalents"])
+        data_for_period["Date"] = month + "/" + year
 
-        data_for_period["Short Term Investments"] = format_data(
-            balance_sheet_data["shortTermInvestments"])
+        entry_name_to_data_name = {
+            "Cash and Cash Equivalents": "cashAndCashEquivalents",
+            "Short Term Investments": "shortTermInvestments",
+            "Receivables": "netReceivables",
+            "Inventories": "inventory",
+            "Current Assets - Other": "otherCurrentAssets",
+            "Total Current Assets": "totalCurrentAssets",
+        }
 
-        data_for_period["Receivables"] = format_data(
-            balance_sheet_data["netReceivables"])
+        for (entry_name, data_name) in entry_name_to_data_name.items():
+            data_for_period[entry_name] = format_data(balance_sheet_data[data_name])
 
-        data_for_period["Inventories"] = format_data(
-            balance_sheet_data["inventory"])
+        entry_data.append(data_for_period)
 
-        data_for_period["Current Assets - Other"] = format_data(
-            balance_sheet_data["otherCurrentAssets"])
-
-        data_for_period["Total Current Assets"] = format_data(
-            balance_sheet_data["totalCurrentAssets"])
-
-        data.append(data_for_period)
-
+    data["Data"] = entry_data
     return json.dumps(data)
 
 
