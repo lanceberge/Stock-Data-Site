@@ -143,3 +143,14 @@ tr {
 .tooltip-trigger:hover span {
   display: block;
 }
+
+.column-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.right {
+    margin-left: auto;
+}

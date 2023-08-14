@@ -1,8 +1,6 @@
 import math
 
 
-# TODO return thousands_base
-
 millnames = ["", "", "M", "B", "T"]
 
 

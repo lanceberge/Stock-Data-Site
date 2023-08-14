@@ -2,6 +2,7 @@ const mainTab = 'key_statistics'
 let activeTab = mainTab
 let fetchedData = {}
 let ticker
+const numberBaseMap = { 2: 'Million', 3: 'Billion', 4: 'Trillion' }
 const renderTabMap = {
   key_statistics: renderKeyStatistics,
   balance_sheet: renderBalanceSheet
@@ -71,16 +72,21 @@ function renderBalanceSheet () {
 
   const data = fetchedData.balance_sheet
 
-  // TODO display the base
-
   // TODO for each table in tabContent
+
+  // TODO, instead of this, the cells should be filled with data in the inner loop, rather than deleted then recreated
+
+  const numberBase = data.Base
+  const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
+  tabContent.querySelector('#balance_sheet_base').textContent = displayedBase
+
   for (const row of tabContent.querySelectorAll('#current_assets tr')) {
     for (const td of row.querySelectorAll('td')) {
       td.remove()
     }
     const key = row.querySelector('th').textContent
 
-    for (const column of data) {
+    for (const column of data.Data) {
       const cell = document.createElement('td')
       cell.textContent = column[key]
       row.appendChild(cell)
