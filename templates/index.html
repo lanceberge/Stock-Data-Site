@@ -34,8 +34,9 @@
     <ul id="tab_navigation" class="tab-navigation">
       <li class="tab-link" data-tab="key_statistics">Key Statistics</li>
       <li class="tab-link" data-tab="balance_sheet">Balance Sheet</li>
-      <li class="tab-link" data-tab="earnings">Earnings</li>
+      <li class="tab-link" data-tab="income_statement">Income Statement</li>
       <li class="tab-link" data-tab="cash_flow">Cash Flow</li>
+      <li class="tab-link" data-tab="earnings">Earnings</li>
       <li class="tab-link" data-tab="insider_trading">Insider Trading</li>
     </ul>
 
@@ -201,12 +202,11 @@
             <li class="tab-link" data-tab="quarterly">Quarterly</li>
             <li class="tab-link" data-tab="yearly">Yearly</li>
           </ul>
-          <span class="right" id="balance_sheet_base">
-          </span>
+          <span class="right" id="number_base"> </span>
         </div>
         <h3>Assets</h3>
         <h4>Current Assets</h4>
-        <table id="current_assets">
+        <table>
           <tr>
             <th>Date</th>
           </tr>
@@ -230,20 +230,54 @@
           </tr>
         </table>
         <h4>Non-Current Assets</h4>
+        <table>
+          <tr>
+            <th>Property Plant & Equipment</th>
+          </tr>
+          <tr>
+            <th>Intangible Assets</th>
+          </tr>
+          <tr>
+            <th>Non-Current Assets (other)</th>
+          </tr>
+          <tr>
+            <th>Non-Current Assets Total</th>
+          </tr>
+        </table>
         <h3>Liabilities</h3>
-        <table></table>
-        <h3>Shareholder Equity</h3>
-        <table></table>
+        <table>
+          <tr>
+            <th>Date</th>
+          </tr>
+          <tr>
+            <th>Long-Term Debt</th>
+          </tr>
+          <tr>
+            <th>Accounts Payable</th>
+          </tr>
+          <tr>
+            <th>Long-Term Debt</th>
+          </tr>
+          <tr>
+            <th>Liabilities Total</th>
+          </tr>
+        </table>
+        <!-- TODO Shares outstanding -->
       </div>
 
-      <div id="earnings" class="tab-content">
-        <h2>Earnings</h2>
+      <div id="income_statement" class="tab-content">
+        <h2>Income Statement</h2>
         <p>This is the content for Tab 3.</p>
       </div>
 
       <div id="cash_flow" class="tab-content">
         <h2>Cash Flow</h2>
         <p>This is the content for Tab 4.</p>
+      </div>
+
+      <div id="earnings" class="tab-content">
+        <h2>Earnings</h2>
+        <p>This is the content for Tab 3.</p>
       </div>
 
       <div id="insider_trading" class="tab-content">

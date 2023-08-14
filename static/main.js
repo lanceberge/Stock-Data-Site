@@ -5,7 +5,7 @@ let ticker
 const numberBaseMap = { 2: 'Million', 3: 'Billion', 4: 'Trillion' }
 const renderTabMap = {
   key_statistics: renderKeyStatistics,
-  balance_sheet: renderBalanceSheet
+  balance_sheet: renderTable
 }
 
 async function switchTab (tabId) {
@@ -33,8 +33,11 @@ async function switchTab (tabId) {
     return
   }
 
-  if (tabId in renderTabMap) {
-    renderTabMap[tabId]()
+  if (tabId == 'key_statistics') {
+    renderKeyStatistics()
+  } else if (tabId == 'balance_sheet') {
+    renderTable('balance_sheet'
+    )
   }
 }
 
@@ -66,11 +69,12 @@ function renderKeyStatistics () {
   }
 }
 
-function renderBalanceSheet () {
-  const tabContent = document.getElementById('balance_sheet')
+// TODO refactor to be generic to each table (balance sheet, income statement, cash flow
+function renderTable (tabId) {
+  const tabContent = document.getElementById(tabId)
   tabContent.classList.add('active')
 
-  const data = fetchedData.balance_sheet
+  const data = fetchedData[tabId]
 
   // TODO for each table in tabContent
 
@@ -78,18 +82,21 @@ function renderBalanceSheet () {
 
   const numberBase = data.Base
   const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
-  tabContent.querySelector('#balance_sheet_base').textContent = displayedBase
+  tabContent.querySelector('#number_base').textContent = displayedBase
 
-  for (const row of tabContent.querySelectorAll('#current_assets tr')) {
-    for (const td of row.querySelectorAll('td')) {
-      td.remove()
-    }
-    const key = row.querySelector('th').textContent
+  for (const table of tabContent.querySelectorAll('table')) {
+    for (const row of table.querySelectorAll('tr')) {
+      for (const td of row.querySelectorAll('td')) {
+        td.remove()
+      }
 
-    for (const column of data.Data) {
-      const cell = document.createElement('td')
-      cell.textContent = column[key]
-      row.appendChild(cell)
+      const key = row.querySelector('th').textContent
+
+      for (const column of data.Data) {
+        const cell = document.createElement('td')
+        cell.textContent = column[key]
+        row.appendChild(cell)
+      }
     }
   }
 }

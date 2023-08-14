@@ -114,10 +114,10 @@ def balance_sheet():
 
     data = {}
     data["Base"] = thousands_base
-    # TODO pass base to frontend
 
     entry_data = []
 
+    # TODO Factor this out
     for balance_sheet_data in balance_sheet[::-1]:
         data_for_period = {}
 
@@ -132,9 +132,16 @@ def balance_sheet():
             "Inventories": "inventory",
             "Current Assets - Other": "otherCurrentAssets",
             "Total Current Assets": "totalCurrentAssets",
+            "Property Plant & Equipment": "propertyPlantEquipmentNet",
+            "Intangible Assets": "intangibleAssets",
+            "Non-Current Assets (other)": "otherNonCurrentLiabilities",
+            "Non-Current Assets Total": "totalNonCurrentLiabilities",
+            "Long-Term Debt": "longTermDebt",
+            "Accounts Payable": "accountPayables",
+            "Liabilities Total": "totalLiabilities",
         }
 
-        for (entry_name, data_name) in entry_name_to_data_name.items():
+        for entry_name, data_name in entry_name_to_data_name.items():
             data_for_period[entry_name] = format_data(balance_sheet_data[data_name])
 
         entry_data.append(data_for_period)
