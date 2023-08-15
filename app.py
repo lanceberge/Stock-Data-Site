@@ -162,8 +162,7 @@ def income_statement():
         "Earnings Per Share (diluted)": "epsdiluted",
     }
 
-    earnings_data = get_data_from_api_map(api_data, earnings_names)
-    # print(earnings_data)
+    earnings_data = get_data_from_api_map(api_data, earnings_names, include_date=False)
     return_map["Data"].extend(earnings_data)
 
     return json.dumps(return_map)
@@ -184,26 +183,27 @@ def insider_trading():
     return json.dumps([])
 
 
-def get_data_from_api_map(api_data, entry_name_to_data_name, thousands_base=0):
+def get_data_from_api_map(api_data, entry_name_to_data_name, thousands_base=0, include_date=True):
     format_data = lambda n: millify(
         n, thousands_base=thousands_base, include_suffix=False
     )
 
     return_data = []
 
-    for api_data_by_period in api_data[::-1]:
-        return_data_by_period = {}
+    for api_data_column in api_data[::-1]:
+        return_data_column = {}
 
-        date = api_data_by_period["date"].split("-")
-        month, year = date[1], date[0][-2:]
-        return_data_by_period["Date"] = month + "/" + year
+        if include_date:
+            date = api_data_column["date"].split("-")
+            month, year = date[1], date[0][-2:]
+            return_data_column["Date"] = month + "/" + year
 
         for entry_name, data_name in entry_name_to_data_name.items():
-            return_data_by_period[entry_name] = format_data(
-                api_data_by_period[data_name]
+            return_data_column[entry_name] = format_data(
+                api_data_column[data_name]
             )
 
-        return_data.append(return_data_by_period)
+        return_data.append(return_data_column)
 
     return return_data
 
