@@ -3,10 +3,6 @@ let activeTab = mainTab
 let fetchedData = {}
 let ticker
 const numberBaseMap = { 2: 'Million', 3: 'Billion', 4: 'Trillion' }
-const renderTabMap = {
-  key_statistics: renderKeyStatistics,
-  balance_sheet: renderTable
-}
 
 async function switchTab (tabId) {
   if (ticker && !fetchedData[tabId]) {
@@ -33,11 +29,18 @@ async function switchTab (tabId) {
     return
   }
 
-  if (tabId == 'key_statistics') {
-    renderKeyStatistics()
-  } else if (tabId == 'balance_sheet') {
-    renderTable('balance_sheet'
-    )
+  switch (tabId) {
+    case 'key_statistics':
+      renderKeyStatistics()
+      break
+    case 'balance_sheet':
+      renderTable('balance_sheet')
+      break
+    case 'income_statement':
+      renderTable('income_statement')
+      break
+    default:
+      break
   }
 }
 
@@ -69,14 +72,11 @@ function renderKeyStatistics () {
   }
 }
 
-// TODO refactor to be generic to each table (balance sheet, income statement, cash flow
 function renderTable (tabId) {
   const tabContent = document.getElementById(tabId)
   tabContent.classList.add('active')
 
   const data = fetchedData[tabId]
-
-  // TODO for each table in tabContent
 
   // TODO, instead of this, the cells should be filled with data in the inner loop, rather than deleted then recreated
 

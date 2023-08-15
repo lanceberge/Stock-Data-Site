@@ -68,6 +68,7 @@ def key_statistics():
     # If the Price has changed by 5% or if there have been recent earnings/filings, then load data from API
     # otherwise, load everything from the database
 
+    # TODO use update instead
     data_dict = (
         retrieve_from_api("quote-short", ticker)[0]
         | retrieve_from_api("key-metrics-ttm", ticker)[0]
@@ -102,57 +103,70 @@ def after_key_statistics(response):
 def balance_sheet():
     # TODO quarterly
     ticker = request.args.get("ticker")
-    balance_sheet = retrieve_from_api(
-        "balance-sheet-statement", ticker, args=["limit=120"]
+    api_data = retrieve_from_api("balance-sheet-statement", ticker, args=["limit=120"])
+
+    first_value = api_data[-1]["cashAndCashEquivalents"]
+    thousands_base = get_thousands_base(first_value) - 1
+
+    return_map = {}
+    return_map["Base"] = thousands_base
+
+    # TODO refactor all of this to use the API id and make that the html id
+    balance_sheet_names = {
+        "Cash and Cash Equivalents": "cashAndCashEquivalents",
+        "Short Term Investments": "shortTermInvestments",
+        "Receivables": "netReceivables",
+        "Inventories": "inventory",
+        "Current Assets - Other": "otherCurrentAssets",
+        "Total Current Assets": "totalCurrentAssets",
+        "Property Plant & Equipment": "propertyPlantEquipmentNet",
+        "Intangible Assets": "intangibleAssets",
+        "Non-Current Assets (other)": "otherNonCurrentLiabilities",
+        "Non-Current Assets Total": "totalNonCurrentLiabilities",
+        "Long-Term Debt": "longTermDebt",
+        "Accounts Payable": "accountPayables",
+        "Liabilities Total": "totalLiabilities",
+    }
+
+    return_map["Data"] = get_data_from_api_map(api_data, balance_sheet_names)
+    return json.dumps(return_map)
+
+
+@app.route("/income_statement")
+def income_statement():
+    ticker = request.args.get("ticker")
+    api_data = retrieve_from_api("income-statement", ticker, args=["limit=120"])
+
+    first_value = api_data[-1]["revenue"]
+    thousands_base = get_thousands_base(first_value) - 1
+
+    return_map = {}
+    return_map["Base"] = thousands_base
+
+    # TODO gross profit ratio
+    income_statement_names = {
+        "Revenue": "revenue",
+        "Cost of Revenue": "costOfRevenue",
+        "Gross Profit": "grossProfit",
+        "Operating Expenses": "operatingExpenses",
+        "EBITDA": "ebitda",
+        "Net Income": "netIncome"
+    }
+
+    return_map["Data"] = get_data_from_api_map(
+        api_data, income_statement_names, thousands_base
     )
 
-    first_year_cash_value = balance_sheet[-1]["cashAndCashEquivalents"]
-    thousands_base = get_thousands_base(first_year_cash_value)
-    format_data = lambda n: millify(
-        n, thousands_base=thousands_base, include_suffix=False
-    )
+    earnings_names = {
+        "Earnings per Share": "eps",
+        "Earnings Per Share (diluted)": "epsdiluted",
+    }
 
-    data = {}
-    data["Base"] = thousands_base
+    earnings_data = get_data_from_api_map(api_data, earnings_names)
+    # print(earnings_data)
+    return_map["Data"].extend(earnings_data)
 
-    entry_data = []
-
-    # TODO Factor this out
-    for balance_sheet_data in balance_sheet[::-1]:
-        data_for_period = {}
-
-        date = balance_sheet_data["date"].split("-")
-        month, year = date[1], date[0][-2:]
-        data_for_period["Date"] = month + "/" + year
-
-        entry_name_to_data_name = {
-            "Cash and Cash Equivalents": "cashAndCashEquivalents",
-            "Short Term Investments": "shortTermInvestments",
-            "Receivables": "netReceivables",
-            "Inventories": "inventory",
-            "Current Assets - Other": "otherCurrentAssets",
-            "Total Current Assets": "totalCurrentAssets",
-            "Property Plant & Equipment": "propertyPlantEquipmentNet",
-            "Intangible Assets": "intangibleAssets",
-            "Non-Current Assets (other)": "otherNonCurrentLiabilities",
-            "Non-Current Assets Total": "totalNonCurrentLiabilities",
-            "Long-Term Debt": "longTermDebt",
-            "Accounts Payable": "accountPayables",
-            "Liabilities Total": "totalLiabilities",
-        }
-
-        for entry_name, data_name in entry_name_to_data_name.items():
-            data_for_period[entry_name] = format_data(balance_sheet_data[data_name])
-
-        entry_data.append(data_for_period)
-
-    data["Data"] = entry_data
-    return json.dumps(data)
-
-
-@app.route("/earnings")
-def earnings():
-    return json.dumps([])
+    return json.dumps(return_map)
 
 
 @app.route("/cash_flow")
@@ -160,9 +174,38 @@ def cash_flow():
     return json.dumps([])
 
 
+@app.route("/earnings")
+def earnings():
+    return json.dumps([])
+
+
 @app.route("/insider_trading")
 def insider_trading():
     return json.dumps([])
+
+
+def get_data_from_api_map(api_data, entry_name_to_data_name, thousands_base=0):
+    format_data = lambda n: millify(
+        n, thousands_base=thousands_base, include_suffix=False
+    )
+
+    return_data = []
+
+    for api_data_by_period in api_data[::-1]:
+        return_data_by_period = {}
+
+        date = api_data_by_period["date"].split("-")
+        month, year = date[1], date[0][-2:]
+        return_data_by_period["Date"] = month + "/" + year
+
+        for entry_name, data_name in entry_name_to_data_name.items():
+            return_data_by_period[entry_name] = format_data(
+                api_data_by_period[data_name]
+            )
+
+        return_data.append(return_data_by_period)
+
+    return return_data
 
 
 @app.route("/")
