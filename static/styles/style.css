@@ -8,7 +8,11 @@
 }
 
 html {
-  font-family: BlinkMacSystemFont,Segoe UI,Arial,sans-serif;
+  font-family:
+    BlinkMacSystemFont,
+    Segoe UI,
+    Arial,
+    sans-serif;
 }
 
 body {
@@ -35,21 +39,32 @@ body {
 .search-container {
   width: 50%;
   text-align: center;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
 .search-bar {
+  display: flex;
+  align-items: center;
   width: 90%;
   padding: 10px;
-  margin-left: 10px;
   background-color: white;
   outline: 5px solid var(--light-blue);
   outline-radius: 5px;
   border: 2px solid var(--dark-gray);
   border-radius: 5px;
+  padding-left: 40px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--dark-gray);
 }
 
 .search-bar:focus {
-  outline: 5px solid var(--dark-blue);
+  outline: 2px solid var(--dark-blue);
 }
 
 .tab-container {
@@ -110,7 +125,7 @@ td {
 }
 
 tr {
-    border-bottom: 1px solid var(--dark-gray);
+  border-bottom: 1px solid var(--dark-gray);
 }
 
 .table.vertical th {
@@ -145,12 +160,12 @@ tr {
 }
 
 .column-box {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
 }
 
 .right {
-    margin-left: auto;
+  margin-left: auto;
 }
