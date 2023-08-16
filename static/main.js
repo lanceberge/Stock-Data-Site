@@ -75,10 +75,7 @@ function renderKeyStatistics () {
 function renderTable (tabId) {
   const tabContent = document.getElementById(tabId)
   tabContent.classList.add('active')
-
   const data = fetchedData[tabId]
-
-  // TODO, instead of this, the cells should be filled with data in the inner loop, rather than deleted then recreated
 
   const numberBase = data.Base
   const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
@@ -90,8 +87,7 @@ function renderTable (tabId) {
         td.remove()
       }
 
-      const key = row.querySelector('th').textContent
-
+      const key = row.querySelector('th').id
       for (const column of data.Data) {
         const cell = document.createElement('td')
         cell.textContent = column[key]

@@ -111,24 +111,25 @@ def balance_sheet():
     return_map = {}
     return_map["Base"] = thousands_base
 
-    # TODO refactor all of this to use the API id and make that the html id
-    balance_sheet_names = {
-        "Cash and Cash Equivalents": "cashAndCashEquivalents",
-        "Short Term Investments": "shortTermInvestments",
-        "Receivables": "netReceivables",
-        "Inventories": "inventory",
-        "Current Assets - Other": "otherCurrentAssets",
-        "Total Current Assets": "totalCurrentAssets",
-        "Property Plant & Equipment": "propertyPlantEquipmentNet",
-        "Intangible Assets": "intangibleAssets",
-        "Non-Current Assets (other)": "otherNonCurrentLiabilities",
-        "Non-Current Assets Total": "totalNonCurrentLiabilities",
-        "Long-Term Debt": "longTermDebt",
-        "Accounts Payable": "accountPayables",
-        "Liabilities Total": "totalLiabilities",
-    }
+    api_ids_to_keep = [
+        "cashAndCashEquivalents",
+        "shortTermInvestments",
+        "netReceivables",
+        "inventory",
+        "otherCurrentAssets",
+        "totalCurrentAssets",
+        "propertyPlantEquipmentNet",
+        "intangibleAssets",
+        "otherNonCurrentLiabilities",
+        "totalNonCurrentLiabilities",
+        "longTermDebt",
+        "accountPayables",
+        "totalLiabilities",
+    ]
 
-    return_map["Data"] = get_data_from_api_map(api_data, balance_sheet_names)
+    return_map["Data"] = get_data_from_api_map(
+        api_data, api_ids_to_keep, thousands_base
+    )
     return json.dumps(return_map)
 
 
@@ -144,23 +145,20 @@ def income_statement():
     return_map["Base"] = thousands_base
 
     # TODO gross profit ratio
-    income_statement_names = {
-        "Revenue": "revenue",
-        "Cost of Revenue": "costOfRevenue",
-        "Gross Profit": "grossProfit",
-        "Operating Expenses": "operatingExpenses",
-        "EBITDA": "ebitda",
-        "Net Income": "netIncome"
-    }
+    income_statement_names = [
+        "revenue",
+        "costOfRevenue",
+        "grossProfit",
+        "operatingExpenses",
+        "ebitda",
+        "netIncome",
+    ]
 
     return_map["Data"] = get_data_from_api_map(
         api_data, income_statement_names, thousands_base
     )
 
-    earnings_names = {
-        "Earnings per Share": "eps",
-        "Earnings Per Share (diluted)": "epsdiluted",
-    }
+    earnings_names = ["eps", "epsdiluted"]
 
     earnings_data = get_data_from_api_map(api_data, earnings_names, include_date=False)
     return_map["Data"].extend(earnings_data)
@@ -183,7 +181,8 @@ def insider_trading():
     return json.dumps([])
 
 
-def get_data_from_api_map(api_data, entry_name_to_data_name, thousands_base=0, include_date=True):
+def get_data_from_api_map(
+    api_data, api_data_names_to_keep, thousands_base=0, include_date=True):
     format_data = lambda n: millify(
         n, thousands_base=thousands_base, include_suffix=False
     )
@@ -198,10 +197,8 @@ def get_data_from_api_map(api_data, entry_name_to_data_name, thousands_base=0, i
             month, year = date[1], date[0][-2:]
             return_data_column["Date"] = month + "/" + year
 
-        for entry_name, data_name in entry_name_to_data_name.items():
-            return_data_column[entry_name] = format_data(
-                api_data_column[data_name]
-            )
+        for row_name in api_data_names_to_keep:
+            return_data_column[row_name] = format_data(api_data_column[row_name])
 
         return_data.append(return_data_column)
 
