@@ -192,7 +192,7 @@ def cash_flow():
     ]
 
     format_function = lambda n: millify(
-        n, thousands_base, include_suffix=False, accounting_style=True)
+        n, thousands_base, include_suffix=False)
 
     return_map["Data"] = get_data_from_api_map(
         api_data, cash_flow_names, format_function)

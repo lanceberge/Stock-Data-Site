@@ -10,7 +10,7 @@ def get_thousands_base(n):
     return max(0, int(math.floor(0 if n == 0 else math.log10(abs(n)) / 3)))
 
 
-def millify(n, thousands_base=None, include_suffix=True, accounting_style=False):
+def millify(n, thousands_base=None, include_suffix=True, accounting_style=True):
     n = float(n)
 
     if not thousands_base:
