@@ -47,18 +47,15 @@
 
       <div id="key_statistics" class="tab-content">
         <h2>Key Statistics</h2>
-        <p>This is the content for Key Statistics tab.</p>
-
         <table class="table vertical">
           <tr>
-            <th id="Price" class="tooltip-trigger">
+            <th id="price" class="tooltip-trigger">
               Price
               <span class="tooltip-info">Price Per Share</span>
             </th>
-            <td></td>
           </tr>
           <tr>
-            <th id="Market Cap" class="tooltip-trigger">
+            <th id="marketCap" class="tooltip-trigger">
               Market Cap
               <span class="tooltip-info">
                 <a
@@ -69,63 +66,6 @@
                 </a>
               </span>
             </th>
-            <td></td>
-          </tr>
-          <tr>
-            <th id="EV/EBITDA" class="tooltip-trigger">
-              EV/EBITDA
-              <span class="tooltip-info">
-                <a
-                  href="https://www.investopedia.com/terms/e/ev-ebitda.asp"
-                  target="_blank"
-                >
-                  Enterprise Value / EBITDA
-                </a>
-              </span>
-            </th>
-            <td></td>
-          </tr>
-          <tr>
-            <th id="Profit Margins" class="tooltip-trigger">
-              Profit Margins
-              <span class="tooltip-info">
-                <a
-                  href="https://www.investopedia.com/terms/p/profitmargin.asp"
-                  target="_blank"
-                >
-                  Percentage of revenue kept as profit
-                </a>
-              </span>
-            </th>
-            <td></td>
-          </tr>
-          <tr>
-            <th id="P/B" class="tooltip-trigger">
-              P/B
-              <span class="tooltip-info">
-                <a
-                  href="https://www.investopedia.com/terms/p/price-to-bookratio.asp"
-                  target="_blank"
-                >
-                  Market Cap / Book Value
-                </a>
-              </span>
-            </th>
-            <td></td>
-          </tr>
-          <tr>
-            <th id="P/S" class="tooltip-trigger">
-              P/S
-              <span class="tooltip-info">
-                <a
-                  href="https://www.investopedia.com/terms/p/price-to-salesratio.asp"
-                  target="_blank"
-                >
-                  Market Cap / Total Sales
-                </a>
-              </span>
-            </th>
-            <td></td>
           </tr>
           <tr>
             <th id="EPS" class="tooltip-trigger">
@@ -139,30 +79,6 @@
                 </a>
               </span>
             </th>
-            <td></td>
-          </tr>
-          <tr>
-            <th id="Dividend Yield" class="tooltip-trigger">
-              Dividend Yield
-              <span class="tooltip-info">
-                <a
-                  href="https://www.investopedia.com/terms/d/dividendyield.asp"
-                  target="_blank"
-                >
-                  % Return from the company's dividend
-                </a>
-              </span>
-            </th>
-            <td></td>
-          </tr>
-          <tr>
-            <th id="Payout Ratio" class="tooltip-trigger">
-              Payout Ratio
-              <span class="tooltip-info">
-                <!-- TODO -->
-              </span>
-            </th>
-            <td></td>
           </tr>
           <tr>
             <th id="Free Cash Flow" class="tooltip-trigger">
@@ -176,10 +92,64 @@
                 </a>
               </span>
             </th>
-            <td></td>
+          </tr>
+        </table>
+        <h3>TTM Metrics</h3>
+        <table>
+          <tr>
+            <th id="enterpriseValueOverEBITDATTM" class="tooltip-trigger">
+              EV/EBITDA
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/e/ev-ebitda.asp"
+                  target="_blank"
+                >
+                  Enterprise Value / EBITDA
+                </a>
+              </span>
+            </th>
           </tr>
           <tr>
-            <th id="ROIC" class="tooltip-trigger">
+            <th id="peRatioTTM" class="tooltip-trigger">
+              Profit Margins
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/p/profitmargin.asp"
+                  target="_blank"
+                >
+                  Percentage of revenue kept as profit
+                </a>
+              </span>
+            </th>
+          </tr>
+          <tr>
+            <th id="pbRatioTTM" class="tooltip-trigger">
+              P/B
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/p/price-to-bookratio.asp"
+                  target="_blank"
+                >
+                  Market Cap / Book Value
+                </a>
+              </span>
+            </th>
+          </tr>
+          <tr>
+            <th id="priceToSalesRatioTTM" class="tooltip-trigger">
+              P/S
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/p/price-to-salesratio.asp"
+                  target="_blank"
+                >
+                  Market Cap / Total Sales
+                </a>
+              </span>
+            </th>
+          </tr>
+          <tr>
+            <th id="roicTTM" class="tooltip-trigger">
               ROIC
               <span class="tooltip-info">
                 <a
@@ -190,7 +160,30 @@
                 </a>
               </span>
             </th>
-            <td></td>
+          </tr>
+        </table>
+        <h3>Dividends</h3>
+        <table>
+          <tr>
+            <th id="dividendYieldTTM" class="tooltip-trigger">
+              Dividend Yield
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/d/dividendyield.asp"
+                  target="_blank"
+                >
+                  % Return from the company's dividend
+                </a>
+              </span>
+            </th>
+          </tr>
+          <tr>
+            <th id="payoutRatioTTM" class="tooltip-trigger">
+              Payout Ratio
+              <span class="tooltip-info">
+                <!-- TODO -->
+              </span>
+            </th>
           </tr>
         </table>
       </div>
@@ -269,7 +262,7 @@
         </div>
         <table>
           <tr>
-            <th>Date</th>
+            <th id="date">Date</th>
           </tr>
           <tr>
             <th id="revenue">Revenue</th>
@@ -307,7 +300,32 @@
 
       <div id="cash_flow" class="tab-content">
         <h2>Cash Flow</h2>
-        <p>This is the content for Tab 4.</p>
+        <table>
+          <tr>
+            <th id="date">Date</th>
+          </tr>
+          <tr>
+            <th id="revenue">Revenue</th>
+          </tr>
+          <tr>
+            <th id="costOfRevenue">Cost of Revenue</th>
+          </tr>
+          <tr>
+            <th id="grossProfit">Gross Profit</th>
+          </tr>
+          <tr>
+            <th>Gross Profit Ratio</th>
+          </tr>
+          <tr>
+            <th id="operatingExpenses">Operating Expenses</th>
+          </tr>
+          <tr>
+            <th id="ebitda">EBITDA</th>
+          </tr>
+          <tr>
+            <th id="netIncome">Net Income</th>
+          </tr>
+        </table>
       </div>
 
       <div id="earnings" class="tab-content">

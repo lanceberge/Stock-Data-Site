@@ -29,19 +29,7 @@ async function switchTab (tabId) {
     return
   }
 
-  switch (tabId) {
-    case 'key_statistics':
-      renderKeyStatistics()
-      break
-    case 'balance_sheet':
-      renderTable('balance_sheet')
-      break
-    case 'income_statement':
-      renderTable('income_statement')
-      break
-    default:
-      break
-  }
+  renderTable(tabId)
 }
 
 async function search () {
@@ -56,30 +44,16 @@ async function search () {
   switchTab(activeTab, ticker)
 }
 
-function renderKeyStatistics () {
-  const tabContent = document.getElementById('key_statistics')
-  tabContent.classList.add('active')
-
-  const table = tabContent.querySelector('table')
-  const data = fetchedData.key_statistics
-  for (const key in data) {
-    const th = table.querySelector(`th[id="${key}"]`)
-
-    if (th) {
-      const td = th.nextElementSibling
-      td.textContent = data[key]
-    }
-  }
-}
-
 function renderTable (tabId) {
   const tabContent = document.getElementById(tabId)
   tabContent.classList.add('active')
   const data = fetchedData[tabId]
 
-  const numberBase = data.Base
-  const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
-  tabContent.querySelector('#number_base').textContent = displayedBase
+  if (data.Base) {
+    const numberBase = data.Base
+    const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
+    tabContent.querySelector('#number_base').textContent = displayedBase
+  }
 
   for (const table of tabContent.querySelectorAll('table')) {
     for (const row of table.querySelectorAll('tr')) {
