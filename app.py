@@ -176,37 +176,26 @@ def income_statement():
 @app.route("/cash_flow")
 def cash_flow():
     ticker = request.args.get("ticker")
-    api_data = retrieve_from_api("income-statement", ticker, args=["limit=120"])
+    api_data = retrieve_from_api("cash-flow-statement", ticker, args=["limit=120"])
 
-    first_value = api_data[-1]["revenue"]
+    first_value = api_data[-1]["netIncome"]
     thousands_base = get_thousands_base(first_value) - 1
 
     return_map = {}
     return_map["Base"] = thousands_base
 
-    # TODO gross profit ratio
-    income_statement_names = [
-        "revenue",
-        "costOfRevenue",
-        "grossProfit",
-        "operatingExpenses",
-        "ebitda",
+    cash_flow_names = [
         "netIncome",
+        "operatingCashFlow",
+        "netCashUsedForInvestingActivites",
+        "freeCashFlow",
     ]
 
     format_function = lambda n: millify(
-        n, thousands_base, include_suffix=False)
+        n, thousands_base, include_suffix=False, accounting_style=True)
 
     return_map["Data"] = get_data_from_api_map(
-        api_data, income_statement_names, format_function)
-
-    earnings_names = ["eps", "epsdiluted"]
-
-    format_function = lambda n: millify(
-        n, thousands_base=0, include_suffix=False)
-
-    earnings_data = get_data_from_api_map(api_data, earnings_names, format_function, include_date=False)
-    return_map["Data"].extend(earnings_data)
+        api_data, cash_flow_names, format_function)
 
     return json.dumps(return_map)
 
@@ -221,8 +210,7 @@ def insider_trading():
     return json.dumps([])
 
 
-# TODO refactor to go column by column
-# TODO then remove include date parameter
+# TODO doc
 def get_data_from_api_map(
     api_data, api_data_names_to_keep, format_function, include_date=True):
 
@@ -242,26 +230,6 @@ def get_data_from_api_map(
         return_data.insert(0, return_data_column)
 
     return return_data
-
-
-# def merge_decoded_jsons(*lists):
-#     """
-#     given:  two or more lists of dicts, with each list item representing a row and each dict representing a column
-#     return: the list of dicts representing appending rows from all input lists
-#     """
-#     if len(lists) < 2:
-#         raise ValueError("At least two lists are required to merge.")
-
-#     rlist = []
-#     length = len(lists[0])
-
-#     for i in range(length):
-#         merged_dict = {}
-#         for lst in lists:
-#             merged_dict.update(lst[i])
-#         rlist.append(merged_dict)
-
-#     return rlist
 
 
 @app.route("/")

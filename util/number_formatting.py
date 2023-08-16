@@ -10,7 +10,7 @@ def get_thousands_base(n):
     return max(0, int(math.floor(0 if n == 0 else math.log10(abs(n)) / 3)))
 
 
-def millify(n, thousands_base=None, include_suffix=True):
+def millify(n, thousands_base=None, include_suffix=True, accounting_style=False):
     n = float(n)
 
     if not thousands_base:
@@ -29,8 +29,11 @@ def millify(n, thousands_base=None, include_suffix=True):
     else:
         rstring = "{:,.2f}".format(n)
 
+    if accounting_style and n < 0:
+        rstring = "({})".format(rstring[1:])
+
     if include_suffix:
-        return rstring + millnames[millnames_idx]
+        return rstring + " " + millnames[millnames_idx]
 
     return rstring
 
