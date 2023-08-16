@@ -19,30 +19,33 @@
   </head>
 
   <body>
-    <div class="title-box">
-      <h1>Title</h1>
-
-      <div class="search-container">
-        <i class="fa fa-search search-icon"></i>
-        <input
-          type="text"
-          class="search-bar"
-          id="search_ticker"
-          placeholder="Search for a ticker, ex. AAPL"
-          autofocus
-        />
+    <div class="header">
+      <div class="title-box">
+        <h2>Title</h2>
+        <div class="search-container">
+          <i class="fa fa-search search-icon"></i>
+          <input
+            type="text"
+            class="search-bar"
+            id="search_ticker"
+            placeholder="Search for a ticker, ex. AAPL"
+            autofocus
+          />
+        </div>
+        <div class="title-box title-box-right"></div>
       </div>
-      <div class="title-box title-box-right"></div>
     </div>
 
-    <ul id="tab_navigation" class="tab-navigation">
-      <li class="tab-link" data-tab="key_statistics">Key Statistics</li>
-      <li class="tab-link" data-tab="balance_sheet">Balance Sheet</li>
-      <li class="tab-link" data-tab="income_statement">Income Statement</li>
-      <li class="tab-link" data-tab="cash_flow">Cash Flow</li>
-      <!-- <li class="tab-link" data-tab="earnings">Earnings</li> -->
-      <!-- <li class="tab-link" data-tab="insider_trading">Insider Trading</li> -->
-    </ul>
+    <div class="content">
+      <ul id="tab_navigation" class="tab-navigation">
+        <li class="tab-link" data-tab="key_statistics">Key Statistics</li>
+        <li class="tab-link" data-tab="balance_sheet">Balance Sheet</li>
+        <li class="tab-link" data-tab="income_statement">Income Statement</li>
+        <li class="tab-link" data-tab="cash_flow">Cash Flow</li>
+        <!-- <li class="tab-link" data-tab="earnings">Earnings</li> -->
+        <!-- <li class="tab-link" data-tab="insider_trading">Insider Trading</li> -->
+      </ul>
+    </div>
 
     <div class="tab-container">
       <div id="not_found" class="tab-content">
@@ -184,9 +187,9 @@
           <tr>
             <th id="payoutRatioTTM" class="tooltip-trigger">
               Payout Ratio
-              <span class="tooltip-info">
-                <!-- TODO -->
-              </span>
+              <!-- <span class="tooltip-info"> -->
+              <!-- TODO -->
+              <!-- </span> -->
             </th>
           </tr>
         </table>
