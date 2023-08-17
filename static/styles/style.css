@@ -16,7 +16,7 @@ html {
 }
 
 body {
-    margin: 0;
+  margin: 0;
 }
 
 .header {
@@ -25,44 +25,27 @@ body {
   align-items: center;
   top: 0;
   left: 0;
-  width: 100%;
   background-color: var(--dark-blue);
 }
 
 .title-box {
   background-color: var(--dark-blue);
-  display: flex;
   color: white;
-  align-items: center;
   padding-left: 30px;
-  width: 100%;
   height: 60px;
-}
-
-.title-box h2 {
-  flex: 1;
-}
-
-.title-box-right {
-  flex: 1;
 }
 
 .search-container {
   width: 50%;
   position: relative;
-  display: flex;
   text-align: center;
-  align-items: center;
 }
 
 .search-bar {
-  display: flex;
-  align-items: center;
-  width: 100%;
   padding: 10px;
   background-color: white;
   border: 2px solid var(--light-gray);
-  border-radius: 5px;
+  border-radius: 8px;
   padding-left: 40px;
 }
 
@@ -76,12 +59,6 @@ body {
   outline: 2px solid var(--dark-gray);
 }
 
-.tab-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .tab-content {
   display: none;
   width: 50%;
@@ -93,19 +70,11 @@ body {
   display: flex;
 }
 
-.content {
-    margin-top: 60px;
-    width: 100%;
-}
-
 .tab-navigation {
-  display: flex;
-  margin: 0;
+  margin-top: 60px;
   background-color: white;
   padding: 5px;
-  border: 2px solid var(--dark-gray);
-  justify-content: center;
-  align-items: center;
+  border-bottom: 1px solid var(--dark-gray);
 }
 
 .tab-link {
@@ -173,13 +142,26 @@ tr {
   display: block;
 }
 
-.column-box {
+.flex-column {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 100%;
 }
 
 .right {
   margin-left: auto;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
 }

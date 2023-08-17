@@ -19,35 +19,33 @@
   </head>
 
   <body>
-    <div class="header">
-      <div class="title-box">
-        <h2>Title</h2>
-        <div class="search-container">
+    <div class="header full-width">
+      <div class="title-box flex-center full-width">
+        <h2 class="flex-1">Title</h2>
+        <div class="search-container flex-center">
           <i class="fa fa-search search-icon"></i>
           <input
             type="text"
-            class="search-bar"
+            class="search-bar flex-center full-width"
             id="search_ticker"
             placeholder="Search for a ticker, ex. AAPL"
             autofocus
           />
         </div>
-        <div class="title-box title-box-right"></div>
+        <div class="flex-1"></div>
       </div>
     </div>
 
-    <div class="content">
-      <ul id="tab_navigation" class="tab-navigation">
-        <li class="tab-link" data-tab="key_statistics">Key Statistics</li>
-        <li class="tab-link" data-tab="balance_sheet">Balance Sheet</li>
-        <li class="tab-link" data-tab="income_statement">Income Statement</li>
-        <li class="tab-link" data-tab="cash_flow">Cash Flow</li>
-        <!-- <li class="tab-link" data-tab="earnings">Earnings</li> -->
-        <!-- <li class="tab-link" data-tab="insider_trading">Insider Trading</li> -->
-      </ul>
-    </div>
+    <ul id="tab_navigation" class="tab-navigation flex-center">
+      <li class="tab-link" data-tab="key_statistics">Key Statistics</li>
+      <li class="tab-link" data-tab="balance_sheet">Balance Sheet</li>
+      <li class="tab-link" data-tab="income_statement">Income Statement</li>
+      <li class="tab-link" data-tab="cash_flow">Cash Flow</li>
+      <!-- <li class="tab-link" data-tab="earnings">Earnings</li> -->
+      <!-- <li class="tab-link" data-tab="insider_trading">Insider Trading</li> -->
+    </ul>
 
-    <div class="tab-container">
+    <div class="tab-container flex-center">
       <div id="not_found" class="tab-content">
         <p>This ticker could not be found</p>
       </div>
@@ -197,7 +195,7 @@
 
       <div id="balance_sheet" class="tab-content">
         <h2>Balance Sheet</h2>
-        <div class="column-box">
+        <div class="flex-column full-width">
           <ul id="balance_sheet_quarterly_or_yearly" class="tab-navigation">
             <li class="tab-link" data-tab="quarterly">Quarterly</li>
             <li class="tab-link" data-tab="yearly">Yearly</li>
@@ -264,7 +262,7 @@
 
       <div id="income_statement" class="tab-content">
         <h2>Income Statement</h2>
-        <div class="column-box">
+        <div class="flex-column full-width">
           <span class="right" id="number_base"></span>
         </div>
         <table>
@@ -307,7 +305,7 @@
 
       <div id="cash_flow" class="tab-content">
         <h2>Cash Flow</h2>
-        <div class="column-box">
+        <div class="flex-column full-width">
           <span class="right" id="number_base"></span>
         </div>
         <table>
