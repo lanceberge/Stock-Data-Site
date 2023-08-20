@@ -79,12 +79,25 @@ async function fetchDataForTab (tabId, ticker) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  const tabLinks = document.querySelectorAll('#tab_navigation .tab-link')
+  const tabNavigationBars = document.querySelectorAll('.tab-navigation')
 
+  tabNavigationBars.forEach(tabNavigationBar => {
+    const tabLinks = tabNavigationBar.querySelectorAll('.tab-link')
   tabLinks.forEach(tabLink => {
     tabLink.addEventListener('click', function () {
-      const tabId = this.getAttribute('data-tab')
-      switchTab(tabId)
+        tabLinks.forEach(link => {
+          link.classList.remove('active')
+        })
+        tabLink.classList.add('active')
+      })
+    })
+  })
+
+  const mainTabBar = document.getElementById('main_tab_bar')
+  mainTabBar.querySelectorAll('.tab-link').forEach(tabLink => {
+    tabLink.addEventListener('click', function () {
+      const tabId = tabLink.getAttribute('data-tab')
+      displayTab(tabId)
     })
   })
 
