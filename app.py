@@ -101,7 +101,7 @@ def after_key_statistics(response):
 def balance_sheet():
     # TODO quarterly
     ticker = request.args.get("ticker")
-    api_data = retrieve_from_api("balance-sheet-statement", ticker, args=["limit=120"])
+    api_data = retrieve_from_api("balance-sheet-statement", ticker, args=["limit=5"])
 
     first_value = api_data[-1]["cashAndCashEquivalents"]
     thousands_base = get_thousands_base(first_value) - 1
@@ -137,7 +137,7 @@ def balance_sheet():
 @app.route("/income_statement")
 def income_statement():
     ticker = request.args.get("ticker")
-    api_data = retrieve_from_api("income-statement", ticker, args=["limit=120"])
+    api_data = retrieve_from_api("income-statement", ticker, args=["limit=5"])
 
     first_value = api_data[-1]["revenue"]
     thousands_base = get_thousands_base(first_value) - 1
@@ -176,7 +176,7 @@ def income_statement():
 @app.route("/cash_flow")
 def cash_flow():
     ticker = request.args.get("ticker")
-    api_data = retrieve_from_api("cash-flow-statement", ticker, args=["limit=120"])
+    api_data = retrieve_from_api("cash-flow-statement", ticker, args=["limit=5"])
 
     first_value = api_data[-1]["netIncome"]
     thousands_base = get_thousands_base(first_value) - 1

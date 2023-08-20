@@ -3,37 +3,48 @@ let activeTab = mainTab
 let fetchedData = {}
 let ticker
 const numberBaseMap = { 2: 'Million', 3: 'Billion', 4: 'Trillion' }
+const Period = { Quartely: 'quarter', Yearly: 'yearly' }
 
-async function switchTab (tabId) {
-  if (ticker && !fetchedData[tabId]) {
-    await fetchDataForTab(tabId, ticker)
+async function displayTab (tabId) {
+  activeTab = tabId
+
+  // TODO display not_found tab based on bad responses
+  if (tabId == 'key_statistics') {
+    let data
+    if (!fetchedData[tabId]) {
+      const response = await fetch(`/${tabId}?ticker=${ticker}`)
+      data = await response.json()
+      fetchedData[tabId] = data
+    }
+  } else {
+    // TODO period stuff
+    if (!fetchedData[tabId]) {
+      const response = await fetch(`/${tabId}?ticker=${ticker}`)
+      data = await response.json()
+      fetchedData[tabId] = data
+    }
+
+    if (data.Base) {
+      const numberBase = data.Base
+      const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
+      const tabContent = document.getElementById(tabId)
+      tabContent.querySelector('#number_base').textContent = displayedBase
+    }
   }
-
   const tabContents = document.querySelectorAll('.tab-content')
   tabContents.forEach(tabContent => {
     tabContent.classList.remove('active')
   })
 
-  activeTab = tabId
-  const tabLinks = document.querySelectorAll('.tab-link')
-  tabLinks.forEach(link => {
-    if (link.getAttribute('data-tab') == tabId) {
-      link.classList.add('active')
-    } else {
-      link.classList.remove('active')
-    }
-  })
-
-  if (fetchedData[tabId].length == 0) {
-    document.getElementById('not_found').classList.add('active')
-    return
-  }
-
-  renderTable(tabId)
+  displayTable(tabId)
+  document.querySelector(`.tab-content#${tabId}`).classList.add('active')
+  document.querySelector(`.tab-link[data-tab=${tabId}]`).classList.add('active')
 }
 
 async function search () {
   ticker = document.getElementById('search_ticker').value
+
+  // TODO keep track of invalid tickers
   if (!ticker) {
     return
   }
@@ -41,19 +52,12 @@ async function search () {
   // reset fetchedData since a new ticker is provided
   fetchedData = {}
 
-  switchTab(activeTab, ticker)
+  displayTab(activeTab, ticker)
 }
 
-function renderTable (tabId) {
+function displayTable (tabId) {
   const tabContent = document.getElementById(tabId)
-  tabContent.classList.add('active')
   const data = fetchedData[tabId]
-
-  if (data.Base) {
-    const numberBase = data.Base
-    const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
-    tabContent.querySelector('#number_base').textContent = displayedBase
-  }
 
   for (const table of tabContent.querySelectorAll('table')) {
     for (const row of table.querySelectorAll('tr')) {
@@ -71,20 +75,13 @@ function renderTable (tabId) {
   }
 }
 
-async function fetchDataForTab (tabId, ticker) {
-  const response = await fetch(`/${tabId}?ticker=${ticker}`)
-
-  const data = await response.json()
-  fetchedData[tabId] = data
-}
-
 document.addEventListener('DOMContentLoaded', function () {
   const tabNavigationBars = document.querySelectorAll('.tab-navigation')
 
   tabNavigationBars.forEach(tabNavigationBar => {
     const tabLinks = tabNavigationBar.querySelectorAll('.tab-link')
-  tabLinks.forEach(tabLink => {
-    tabLink.addEventListener('click', function () {
+    tabLinks.forEach(tabLink => {
+      tabLink.addEventListener('click', function () {
         tabLinks.forEach(link => {
           link.classList.remove('active')
         })
