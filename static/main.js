@@ -10,27 +10,23 @@ async function displayTab (tabId) {
 
   // TODO display not_found tab based on bad responses
   if (tabId == 'key_statistics') {
-    let data
     if (!fetchedData[tabId]) {
       const response = await fetch(`/${tabId}?ticker=${ticker}`)
-      data = await response.json()
-      fetchedData[tabId] = data
+      fetchedData[tabId] = await response.json()
     }
   } else {
     // TODO period stuff
     if (!fetchedData[tabId]) {
       const response = await fetch(`/${tabId}?ticker=${ticker}`)
-      data = await response.json()
-      fetchedData[tabId] = data
+      fetchedData[tabId] = await response.json()
     }
 
-    if (data.Base) {
-      const numberBase = data.Base
-      const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
-      const tabContent = document.getElementById(tabId)
-      tabContent.querySelector('#number_base').textContent = displayedBase
-    }
+    const numberBase = fetchedData[tabId].Base
+    const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
+    const tabContent = document.getElementById(tabId)
+    tabContent.querySelector('#number_base').textContent = displayedBase
   }
+
   const tabContents = document.querySelectorAll('.tab-content')
   tabContents.forEach(tabContent => {
     tabContent.classList.remove('active')
