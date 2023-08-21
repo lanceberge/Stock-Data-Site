@@ -35,8 +35,7 @@ def millify(n, thousands_base=None, include_suffix=True, accounting_style=True):
 
 def percentify(n):
     return two_decimals(n)+"%"
-    # return "{:.2f}%".format(n * 100).rstrip
 
 
 def two_decimals(n):
-    return "{:.2f}".format(n).rstrip('0').rstrip('.')
+    return "{:,.2f}".format(n).rstrip('0').rstrip('.')
