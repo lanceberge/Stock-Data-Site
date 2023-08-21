@@ -75,14 +75,14 @@ def key_statistics():
 
     data = {}
     data["price"] = millify(price_data["price"])
-    data["enterpriseValueOverEBITDATTM"] = millify(ttm_data["enterpriseValueOverEBITDATTM"])
+    data["enterpriseValueOverEBITDATTM"] = millify(ttm_data["enterpriseValueOverEBITDATTM"], accounting_style=False)
     data["peRatioTTM"] = two_decimals(ttm_data["peRatioTTM"])
     data["pbRatioTTM"] = two_decimals(ttm_data["pbRatioTTM"])
     data["priceToSalesRatioTTM"] = two_decimals(ttm_data["priceToSalesRatioTTM"])
     data["roicTTM"] = percentify(ttm_data["roicTTM"])
     data["dividendYieldTTM"] = percentify(ttm_data["dividendYieldTTM"])
     data["payoutRatioTTM"] = percentify(ttm_data["payoutRatioTTM"])
-    data["marketCap"] = millify(market_cap_data["marketCap"])
+    data["marketCap"] = millify(market_cap_data["marketCap"], include_suffix=True)
 
     g.ticker = ticker
     g.data = data

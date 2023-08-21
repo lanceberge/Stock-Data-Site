@@ -22,25 +22,21 @@ def millify(n, thousands_base=None, include_suffix=True, accounting_style=True):
     # return the string with no decimals if the number doesn't have any
     millnames_idx = min(thousands_base, len(millnames) - 1)
 
-    rstring = None
-    if n.is_integer():
-        rstring =  "{:,.0f}".format(n)
-
-    else:
-        rstring = "{:,.2f}".format(n)
-
+    rstring = two_decimals(n)
+    
     if accounting_style and n < 0:
         rstring = "({})".format(rstring[1:])
 
     if include_suffix:
-        return rstring + " " + millnames[millnames_idx]
+        rstring = rstring + " " + millnames[millnames_idx]
 
     return rstring
 
 
 def percentify(n):
-    return "{:.2f}%".format(n * 100)
+    return two_decimals(n)+"%"
+    # return "{:.2f}%".format(n * 100).rstrip
 
 
 def two_decimals(n):
-    return "{:.2f}".format(n)
+    return "{:.2f}".format(n).rstrip('0').rstrip('.')
