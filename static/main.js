@@ -38,7 +38,6 @@ async function displayTab (tabId) {
 
   displayTable(tabId)
   document.querySelector(`.tab-content#${tabId}`).classList.add('active')
-  document.querySelector(`.tab-link[data-tab=${tabId}]`).classList.add('active')
 }
 
 async function search () {
