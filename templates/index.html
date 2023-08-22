@@ -20,13 +20,13 @@
 
   <body>
     <div class="header full-width">
-      <div class="title-box flex-center full-width">
+      <div class="title-box flex center-content full-width">
         <h2 class="flex-1">Title</h2>
-        <div class="search-container flex-center">
+        <div class="search-container flex center-content center-items">
           <i class="fa fa-search search-icon"></i>
           <input
             type="text"
-            class="search-bar flex-center full-width"
+            class="search-bar flex center-content full-width"
             id="search_ticker"
             placeholder="Search for a ticker, ex. AAPL"
             autofocus
@@ -36,14 +36,14 @@
       </div>
     </div>
 
-    <ul id="main_tab_bar" class="tab-navigation flex-center">
+    <ul id="main_tab_bar" class="tab-navigation flex center-content">
       <li class="tab-link active" data-tab="key_statistics">Key Statistics</li>
       <li class="tab-link" data-tab="balance_sheet">Balance Sheet</li>
       <li class="tab-link" data-tab="income_statement">Income Statement</li>
       <li class="tab-link" data-tab="cash_flow">Cash Flow</li>
     </ul>
 
-    <div class="tab-container flex-center">
+    <div class="tab-container flex center-content">
       <div id="not_found" class="tab-content">
         <p>This ticker could not be found</p>
       </div>
@@ -206,12 +206,12 @@
 
       <div id="balance_sheet" class="tab-content">
         <h2>Balance Sheet</h2>
-        <div class="flex-column full-width">
+        <div class="flex center-items full-width">
           <ul id="balance_sheet_quarterly_or_yearly" class="tab-navigation">
             <li class="tab-link" data-tab="quarterly">Quarterly</li>
             <li class="tab-link" data-tab="yearly">Yearly</li>
           </ul>
-          <span class="right" id="number_base"></span>
+          <div class="right" id="number_base"></div>
         </div>
         <h3>Assets</h3>
         <h4>Current Assets</h4>
@@ -273,7 +273,7 @@
 
       <div id="income_statement" class="tab-content">
         <h2>Income Statement</h2>
-        <div class="flex-column full-width">
+        <div class="flex full-width">
           <span class="right" id="number_base"></span>
         </div>
         <table>
@@ -316,7 +316,7 @@
 
       <div id="cash_flow" class="tab-content">
         <h2>Cash Flow</h2>
-        <div class="flex-column full-width">
+        <div class="flex full-width">
           <span class="right" id="number_base"></span>
         </div>
         <table>

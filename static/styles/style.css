@@ -61,7 +61,7 @@ body {
 
 .tab-content {
   display: none;
-  width: 50%;
+  width: 20%;
   flex-direction: column;
   align-items: flex-start;
 }
@@ -71,10 +71,14 @@ body {
 }
 
 .tab-navigation {
-  margin-top: 60px;
   background-color: white;
   padding: 5px;
   border-bottom: 1px solid var(--dark-gray);
+  text-align: center;
+}
+
+#main_tab_bar {
+  margin-top: 60px;
 }
 
 .tab-link {
@@ -111,6 +115,10 @@ tr {
   border-bottom: 1px solid var(--dark-gray);
 }
 
+tr:hover {
+  background-color: var(--light-gray);
+}
+
 .table.vertical th {
   text-align: left;
 }
@@ -142,10 +150,16 @@ tr {
   display: block;
 }
 
-.flex-column {
+.flex {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+}
+
+.flex.center-items {
+  align-items: center;
+}
+
+.flex.center-content {
+  justify-content: center;
 }
 
 .right {
