@@ -207,14 +207,13 @@
       <div id="balance_sheet" class="tab-content">
         <h2>Balance Sheet</h2>
         <div class="flex center-items full-width">
-          <ul id="balance_sheet_quarterly_or_yearly" class="tab-navigation">
+          <ul id="quarterly_or_yearly" class="tab-navigation flex center-content">
+            <li class="tab-link active" data-tab="yearly">Yearly</li>
             <li class="tab-link" data-tab="quarterly">Quarterly</li>
-            <li class="tab-link" data-tab="yearly">Yearly</li>
           </ul>
           <div class="right" id="number_base"></div>
         </div>
-        <h3>Assets</h3>
-        <h4>Current Assets</h4>
+        <h3>Current Assets</h4>
         <table>
           <tr>
             <th id="date">Date</th>
@@ -238,7 +237,7 @@
             <th id="totalCurrentAssets">Total Current Assets</th>
           </tr>
         </table>
-        <h4>Non-Current Assets</h4>
+        <h3>Non-Current Assets</h4>
         <table>
           <tr>
             <th id="propertyPlantEquipmentNet">Property Plant & Equipment</th>
@@ -273,6 +272,13 @@
 
       <div id="income_statement" class="tab-content">
         <h2>Income Statement</h2>
+        <div class="flex center-items full-width">
+          <ul id="quarterly_or_yearly" class="tab-navigation flex center-content">
+            <li class="tab-link active" data-tab="yearly">Yearly</li>
+            <li class="tab-link" data-tab="quarterly">Quarterly</li>
+          </ul>
+          <div class="right" id="number_base"></div>
+        </div>
         <div class="flex full-width">
           <span class="right" id="number_base"></span>
         </div>
@@ -316,6 +322,13 @@
 
       <div id="cash_flow" class="tab-content">
         <h2>Cash Flow</h2>
+        <div class="flex center-items full-width">
+          <ul id="quarterly_or_yearly" class="tab-navigation flex center-content">
+            <li class="tab-link active" data-tab="yearly">Yearly</li>
+            <li class="tab-link" data-tab="quarterly">Quarterly</li>
+          </ul>
+          <div class="right" id="number_base"></div>
+        </div>
         <div class="flex full-width">
           <span class="right" id="number_base"></span>
         </div>
