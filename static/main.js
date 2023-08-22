@@ -33,7 +33,7 @@ async function displayTab (tabId) {
   })
 
   displayTable(tabId)
-  document.querySelector(`.tab-content#${tabId}`).classList.add('active')
+  document.getElementById(tabId).classList.add('active')
 }
 
 async function search () {

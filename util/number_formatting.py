@@ -28,7 +28,7 @@ def millify(n, thousands_base=None, include_suffix=True, accounting_style=True):
         rstring = "({})".format(rstring[1:])
 
     if include_suffix:
-        rstring = rstring + " " + millnames[millnames_idx]
+        rstring = rstring + millnames[millnames_idx]
 
     return rstring
 

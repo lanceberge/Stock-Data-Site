@@ -72,18 +72,19 @@ body {
 
 .tab-navigation {
   background-color: white;
-  padding: 5px;
-  border-bottom: 1px solid var(--dark-gray);
+  padding: 10px;
   text-align: center;
 }
 
 #main_tab_bar {
   margin-top: 60px;
+  border-bottom: 1px solid var(--dark-gray);
 }
 
 .tab-link {
   display: inline;
-  margin-right: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
   cursor: pointer;
   padding: 10px;
   border-radius: 5px;
