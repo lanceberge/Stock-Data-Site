@@ -4,10 +4,18 @@ let fetchedData = {}
 let ticker
 const numberBaseMap = { 2: 'Million', 3: 'Billion', 4: 'Trillion' }
 
-async function displayTab(tabId, period="yearly") {
+async function displayTab(tabId, period = "yearly") {
   activeTab = tabId
 
-  // TODO display not_found tab based on bad responses
+  const tabLinks = document.querySelectorAll('#main_tab_bar .tab-link')
+  tabLinks.forEach(tabLink => {
+    if (tabLink.getAttribute('data-tab') == tabId) {
+      tabLink.classList.add('active')
+    } else {
+      tabLink.classList.remove('active')
+    }
+  })
+
   if (tabId == 'key_statistics') {
     if (!fetchedData[tabId]) {
       const response = await fetch(`/${tabId}?ticker=${ticker}`)
@@ -20,8 +28,8 @@ async function displayTab(tabId, period="yearly") {
     if (!fetchedData[tabId]) {
       fetchedData[tabId] = {}
     }
-    
-    if(!fetchedData[tabId][period]) {
+
+    if (!fetchedData[tabId][period]) {
       const response = await fetch(`/${tabId}?ticker=${ticker}&period=${period}`)
       fetchedData[tabId][period] = await response.json()
       // TODO handle bad responses
@@ -61,7 +69,7 @@ async function search() {
   // reset fetchedData since a new ticker is provided
   fetchedData = {}
 
-  displayTab(activeTab, ticker)
+  displayTab(mainTab, ticker)
 }
 
 function displayTable(tabId, data) {
@@ -84,21 +92,6 @@ function displayTable(tabId, data) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  
-  // TODO this might all be removeable once the search defaults to mainTab
-  const tabNavigationBars = document.querySelectorAll('.tab-navigation')
-  tabNavigationBars.forEach(tabNavigationBar => {
-    const tabLinks = tabNavigationBar.querySelectorAll('.tab-link')
-    tabLinks.forEach(tabLink => {
-      tabLink.addEventListener('click', function () {
-        tabLinks.forEach(link => {
-          link.classList.remove('active')
-        })
-        tabLink.classList.add('active')
-      })
-    })
-  })
-
   const mainTabBar = document.getElementById('main_tab_bar')
   mainTabBar.querySelectorAll('.tab-link').forEach(tabLink => {
     tabLink.addEventListener('click', function () {
