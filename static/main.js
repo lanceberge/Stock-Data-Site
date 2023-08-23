@@ -33,6 +33,13 @@ async function displayTab(tabId, period="yearly") {
     tabContent.querySelector('#number_base').textContent = displayedBase
 
     displayTable(tabId, fetchedData[tabId][period])
+    tabContent.querySelectorAll('#period_tab_bar .tab-link').forEach(tabLink => {
+      if (tabLink.getAttribute('data-tab') == period) {
+        tabLink.classList.add('active')
+      } else {
+        tabLink.classList.remove('active')
+      }
+    })
   }
 
   const tabContents = document.querySelectorAll('.tab-content')
@@ -77,6 +84,8 @@ function displayTable(tabId, data) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  
+  // TODO this might all be removeable once the search defaults to mainTab
   const tabNavigationBars = document.querySelectorAll('.tab-navigation')
   tabNavigationBars.forEach(tabNavigationBar => {
     const tabLinks = tabNavigationBar.querySelectorAll('.tab-link')
@@ -98,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   })
 
-  const quarterlyBars = document.querySelectorAll('#quarterly_or_yearly')
+  const quarterlyBars = document.querySelectorAll('#period_tab_bar')
   quarterlyBars.forEach(quarterlyBar => {
     quarterlyBar.querySelectorAll('.tab-link').forEach(tabLink => {
       tabLink.addEventListener('click', function () {
@@ -106,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function () {
         displayTab(activeTab, period)
       })
     })
-
   })
 
   const searchInput = document.getElementById('search_ticker')
