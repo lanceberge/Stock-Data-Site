@@ -3,9 +3,8 @@ let activeTab = mainTab
 let fetchedData = {}
 let ticker
 const numberBaseMap = { 2: 'Million', 3: 'Billion', 4: 'Trillion' }
-const Period = { Quartely: 'quarter', Yearly: 'yearly' }
 
-async function displayTab (tabId) {
+async function displayTab(tabId, period="yearly") {
   activeTab = tabId
 
   // TODO display not_found tab based on bad responses
@@ -13,18 +12,27 @@ async function displayTab (tabId) {
     if (!fetchedData[tabId]) {
       const response = await fetch(`/${tabId}?ticker=${ticker}`)
       fetchedData[tabId] = await response.json()
+      // TODO handle bad responses
+
+      displayTable(tabId, fetchedData[tabId])
     }
   } else {
-    // TODO period stuff
     if (!fetchedData[tabId]) {
-      const response = await fetch(`/${tabId}?ticker=${ticker}`)
-      fetchedData[tabId] = await response.json()
+      fetchedData[tabId] = {}
+    }
+    
+    if(!fetchedData[tabId][period]) {
+      const response = await fetch(`/${tabId}?ticker=${ticker}&period=${period}`)
+      fetchedData[tabId][period] = await response.json()
+      // TODO handle bad responses
     }
 
-    const numberBase = fetchedData[tabId].Base
+    const numberBase = fetchedData[tabId][period].Base
     const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
     const tabContent = document.getElementById(tabId)
     tabContent.querySelector('#number_base').textContent = displayedBase
+
+    displayTable(tabId, fetchedData[tabId][period])
   }
 
   const tabContents = document.querySelectorAll('.tab-content')
@@ -32,11 +40,10 @@ async function displayTab (tabId) {
     tabContent.classList.remove('active')
   })
 
-  displayTable(tabId)
   document.getElementById(tabId).classList.add('active')
 }
 
-async function search () {
+async function search() {
   ticker = document.getElementById('search_ticker').value
 
   // TODO keep track of invalid tickers
@@ -50,9 +57,8 @@ async function search () {
   displayTab(activeTab, ticker)
 }
 
-function displayTable (tabId) {
+function displayTable(tabId, data) {
   const tabContent = document.getElementById(tabId)
-  const data = fetchedData[tabId]
 
   for (const table of tabContent.querySelectorAll('table')) {
     for (const row of table.querySelectorAll('tr')) {
@@ -72,7 +78,6 @@ function displayTable (tabId) {
 
 document.addEventListener('DOMContentLoaded', function () {
   const tabNavigationBars = document.querySelectorAll('.tab-navigation')
-
   tabNavigationBars.forEach(tabNavigationBar => {
     const tabLinks = tabNavigationBar.querySelectorAll('.tab-link')
     tabLinks.forEach(tabLink => {
@@ -91,6 +96,17 @@ document.addEventListener('DOMContentLoaded', function () {
       const tabId = tabLink.getAttribute('data-tab')
       displayTab(tabId)
     })
+  })
+
+  const quarterlyBars = document.querySelectorAll('#quarterly_or_yearly')
+  quarterlyBars.forEach(quarterlyBar => {
+    quarterlyBar.querySelectorAll('.tab-link').forEach(tabLink => {
+      tabLink.addEventListener('click', function () {
+        const period = tabLink.getAttribute('data-tab')
+        displayTab(activeTab, period)
+      })
+    })
+
   })
 
   const searchInput = document.getElementById('search_ticker')
