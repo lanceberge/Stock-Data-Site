@@ -25,6 +25,15 @@ async function displayTab(tabId, period = "yearly") {
       displayTable(tabId, fetchedData[tabId])
     }
   } else {
+    const tabContent = document.getElementById(tabId)
+    tabContent.querySelectorAll('#period_tab_bar .tab-link').forEach(tabLink => {
+      if (tabLink.getAttribute('data-tab') == period) {
+        tabLink.classList.add('active')
+      } else {
+        tabLink.classList.remove('active')
+      }
+    })
+    
     if (!fetchedData[tabId]) {
       fetchedData[tabId] = {}
     }
@@ -37,17 +46,9 @@ async function displayTab(tabId, period = "yearly") {
 
     const numberBase = fetchedData[tabId][period].Base
     const displayedBase = numberBase in numberBaseMap ? 'USD ' + numberBaseMap[numberBase] : ''
-    const tabContent = document.getElementById(tabId)
     tabContent.querySelector('#number_base').textContent = displayedBase
 
     displayTable(tabId, fetchedData[tabId][period])
-    tabContent.querySelectorAll('#period_tab_bar .tab-link').forEach(tabLink => {
-      if (tabLink.getAttribute('data-tab') == period) {
-        tabLink.classList.add('active')
-      } else {
-        tabLink.classList.remove('active')
-      }
-    })
   }
 
   const tabContents = document.querySelectorAll('.tab-content')
@@ -59,22 +60,18 @@ async function displayTab(tabId, period = "yearly") {
 }
 
 async function search() {
-  ticker = document.getElementById('search_ticker').value
-
-  // TODO keep track of invalid tickers
-  if (!ticker) {
+  const newTicker = document.getElementById('search_bar').value
+  if (newTicker == ticker || !newTicker) {
     return
   }
 
-  // reset fetchedData since a new ticker is provided
+  ticker = newTicker
   fetchedData = {}
-
   displayTab(mainTab, ticker)
 }
 
 function displayTable(tabId, data) {
   const tabContent = document.getElementById(tabId)
-
   for (const table of tabContent.querySelectorAll('table')) {
     for (const row of table.querySelectorAll('tr')) {
       for (const td of row.querySelectorAll('td')) {
@@ -100,9 +97,10 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   })
 
-  const quarterlyBars = document.querySelectorAll('#period_tab_bar')
-  quarterlyBars.forEach(quarterlyBar => {
-    quarterlyBar.querySelectorAll('.tab-link').forEach(tabLink => {
+  const periodTabBars = document.querySelectorAll('#period_tab_bar')
+  periodTabBars.forEach(periodTabBar => {
+    const tabLinks = periodTabBar.querySelectorAll('.tab-link')
+    tabLinks.forEach(tabLink => {
       tabLink.addEventListener('click', function () {
         const period = tabLink.getAttribute('data-tab')
         displayTab(activeTab, period)
@@ -110,10 +108,17 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   })
 
-  const searchInput = document.getElementById('search_ticker')
+  const searchInput = document.getElementById('search_bar')
   searchInput.addEventListener('keydown', function (event) {
     if (event.keyCode === 13) {
       search()
     }
   })
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === '/') {
+      event.preventDefault();
+      document.getElementById('search_bar').focus();
+    }
+  });
 })
