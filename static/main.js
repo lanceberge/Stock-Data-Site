@@ -15,6 +15,10 @@ async function displayTab(tabId, period = "yearly") {
       tabLink.classList.remove('active')
     }
   })
+  
+  if (!ticker) {
+    return
+  }
 
   if (tabId == 'key_statistics') {
     if (!fetchedData[tabId]) {
