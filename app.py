@@ -24,50 +24,21 @@ def retrieve_from_api(metric, ticker, args=None):
     return data_dict
 
 
-# TODO transition to MySQL
-def execute_query(query):
+def insert_into_database(data, table_name):
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
-    cursor.execute(query)
-    # data = cursor.fetchall()
+    columns = ", ".join(data.keys())
+    query = "INSERT INTO %s (%s) VALUES (%s);" % (table_name, columns, ','.join('?' * len(data.values())))
+    cursor.execute(query, list(data.values()))
+    conn.commit()
     cursor.close()
     conn.close()
-
-    # if len(data) == 0:
-    #     return jsonify([])
-
-    # # TODO if any of these values are empty, call API
-    # return jsonify(data[0])
-
-
-def add_to_database(data, database):
-    # if data is 2d, ex. if it's a dict
-    # insert into the respective columns
-
-    # if it's a list of dicts, idek
-
-    # TODO if key exists in data, update it
-
-    columns = ", ".join(data.keys())
-    values = ", ".join(data.values())
-    query = f"INSERT INTO {database} ({columns}) VALUES ({values})"
-    execute_query(query)
-
-
-def retrieve_from_database(ticker, database):
-    pass
 
 
 @app.route("/key_statistics")
 def key_statistics():
     ticker = request.args.get("ticker")
-
-    # TODO if data is too old or nonexistent, call API and replace data
-
-    # TODO Load stock price and date from the database
-    # If the Price has changed by 5% or if there have been recent earnings/filings, then load data from API
-    # otherwise, load everything from the database
-
+    
     # TODO profit margins, EPS, FCF
     price_data = retrieve_from_api("quote-short", ticker)[0]
     ttm_data = retrieve_from_api("key-metrics-ttm", ticker)[0]
@@ -92,15 +63,12 @@ def key_statistics():
     return json.dumps(return_map)
 
 
-@app.after_request
-def after_key_statistics(response):
-    return response
-
-
 @app.route("/balance_sheet")
 def balance_sheet():
     ticker = request.args.get("ticker")
     period = request.args.get("period")
+    
+    # TODO identify the number of periods needed based on the most recent date in the db
     api_data = retrieve_from_api("balance-sheet-statement", ticker, args=["limit=5", f"period={period}"])
 
     first_value = api_data[-1]["cashAndCashEquivalents"]
@@ -130,6 +98,11 @@ def balance_sheet():
 
     return_map["Data"] = get_data_from_api_map(
         api_data, api_ids_to_keep, format_function)
+
+    g.ticker = ticker
+    g.data = return_map["Data"]
+    g.base = str(thousands_base)
+    g.period = str(period)
 
     return json.dumps(return_map)
 
@@ -202,14 +175,21 @@ def cash_flow():
     return json.dumps(return_map)
 
 
-@app.route("/earnings")
-def earnings():
-    return json.dumps([])
+@app.after_request
+def after_request(response):
+    def after_balance_sheet():
+        for row in g.data:
+            row['base'] = g.base
+            row['ticker'] = g.ticker
+            row['filingPeriod'] = g.period
+            insert_into_database(row, 'BalanceSheet')
 
+    request_to_function_map = {"/balance_sheet": after_balance_sheet}
 
-@app.route("/insider_trading")
-def insider_trading():
-    return json.dumps([])
+    if request.path in request_to_function_map:
+        request_to_function_map[request.path]()
+
+    return response
 
 
 # TODO doc
@@ -217,14 +197,13 @@ def get_data_from_api_map(
     api_data, api_data_names_to_keep, format_function, include_date=True):
 
     return_data = []
-
     for api_data_column in api_data:
         return_data_column = {}
 
         if include_date:
             date = api_data_column["date"].split("-")
             month, year = date[1], date[0][-2:]
-            return_data_column["date"] = month + "/" + year
+            return_data_column["filingDate"] = month + "/" + year
 
         for row_name in api_data_names_to_keep:
             return_data_column[row_name] = format_function(api_data_column[row_name])
