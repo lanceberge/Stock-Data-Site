@@ -74,9 +74,6 @@ def balance_sheet():
     first_value = api_data[-1]["cashAndCashEquivalents"]
     thousands_base = get_thousands_base(first_value) - 1
 
-    return_map = {}
-    return_map["Base"] = thousands_base
-
     api_ids_to_keep = [
         "cashAndCashEquivalents",
         "shortTermInvestments",
@@ -93,18 +90,8 @@ def balance_sheet():
         "totalLiabilities",
     ]
 
-    format_function = lambda n: millify(
-        n, thousands_base, include_suffix=False)
-
-    return_map["Data"] = get_data_from_api_map(
-        api_data, api_ids_to_keep, format_function)
-
-    g.ticker = ticker
-    g.data = return_map["Data"]
-    g.base = str(thousands_base)
-    g.period = str(period)
-
-    return json.dumps(return_map)
+    return_data = table_from_api_data(api_ids_to_keep, thousands_base, ticker, period, api_data)
+    return json.dumps(return_data)
 
 
 @app.route("/income_statement")
@@ -115,10 +102,7 @@ def income_statement():
 
     first_value = api_data[-1]["revenue"]
     thousands_base = get_thousands_base(first_value) - 1
-
-    return_map = {}
-    return_map["Base"] = thousands_base
-
+    
     # TODO gross profit ratio
     income_statement_names = [
         "revenue",
@@ -129,20 +113,11 @@ def income_statement():
         "netIncome",
     ]
 
-    format_function = lambda n: millify(
-        n, thousands_base, include_suffix=False)
-
-    return_map["Data"] = get_data_from_api_map(
-        api_data, income_statement_names, format_function
-    )
-
+    return_map = table_from_api_data(income_statement_names, thousands_base, ticker, period, api_data)
+    
     earnings_names = ["eps", "epsdiluted"]
-
-    format_function = lambda n: millify(
-        n, thousands_base=0, include_suffix=False)
-
-    earnings_data = get_data_from_api_map(api_data, earnings_names, format_function, include_date=False)
-    return_map["Data"].extend(earnings_data)
+    earnings_map = table_from_api_data(earnings_names, 1, ticker, period, api_data, include_date=False)
+    return_map["Data"].extend(earnings_map["Data"])
 
     return json.dumps(return_map)
 
@@ -155,24 +130,48 @@ def cash_flow():
 
     first_value = api_data[-1]["netIncome"]
     thousands_base = get_thousands_base(first_value) - 1
-
-    return_map = {}
-    return_map["Base"] = thousands_base
-
+    
     cash_flow_names = [
         "netIncome",
         "operatingCashFlow",
         "netCashUsedForInvestingActivites",
         "freeCashFlow",
     ]
+    
+    return_map = table_from_api_data(cash_flow_names, thousands_base, ticker, period, api_data)
+    return json.dumps(return_map)
+
+
+# TODO refactor to allow different format_functions
+def table_from_api_data(api_ids_to_keep, thousands_base, ticker, period, api_data, include_date=True):
+    return_map = {}
+    return_map["Base"] = thousands_base
 
     format_function = lambda n: millify(
         n, thousands_base, include_suffix=False)
+    
+    return_data = []
+    for api_data_column in api_data:
+        return_data_column = {}
 
-    return_map["Data"] = get_data_from_api_map(
-        api_data, cash_flow_names, format_function)
+        if include_date:
+            date = api_data_column["date"].split("-")
+            month, year = date[1], date[0][-2:]
+            return_data_column["filingDate"] = month + "/" + year
 
-    return json.dumps(return_map)
+        for row_name in api_ids_to_keep:
+            return_data_column[row_name] = format_function(api_data_column[row_name])
+
+        return_data.insert(0, return_data_column)
+
+    return_map["Data"] = return_data
+
+    g.ticker = ticker
+    g.data = return_map["Data"]
+    g.base = str(thousands_base)
+    g.period = str(period)
+
+    return return_map
 
 
 @app.after_request
@@ -190,27 +189,6 @@ def after_request(response):
         request_to_function_map[request.path]()
 
     return response
-
-
-# TODO doc
-def get_data_from_api_map(
-    api_data, api_data_names_to_keep, format_function, include_date=True):
-
-    return_data = []
-    for api_data_column in api_data:
-        return_data_column = {}
-
-        if include_date:
-            date = api_data_column["date"].split("-")
-            month, year = date[1], date[0][-2:]
-            return_data_column["filingDate"] = month + "/" + year
-
-        for row_name in api_data_names_to_keep:
-            return_data_column[row_name] = format_function(api_data_column[row_name])
-
-        return_data.insert(0, return_data_column)
-
-    return return_data
 
 
 @app.route("/")
