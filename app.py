@@ -55,111 +55,114 @@ def key_statistics():
 
 @app.route("/balance_sheet")
 def balance_sheet():
-    ticker = request.args.get("ticker")
-    period = request.args.get("period")
+    g.ticker = request.args.get("ticker")
+    g.period = request.args.get("period")
     
     # TODO identify the number of periods needed based on the most recent date in the db
-    api_data = retrieve_from_api("balance-sheet-statement", ticker, args=["limit=5", f"period={period}"])
+    api_data = retrieve_from_api("balance-sheet-statement", g.ticker, args=["limit=5", f"period={g.period}"])
 
     first_value = api_data[-1]["cashAndCashEquivalents"]
-    thousands_base = get_thousands_base(first_value) - 1
+    g.thousands_base = get_thousands_base(first_value) - 1
+    
+    format_function = lambda n: millify(
+        n, g.thousands_base, include_suffix=False)
 
     api_ids_to_keep = [
-        "cashAndCashEquivalents",
-        "shortTermInvestments",
-        "netReceivables",
-        "inventory",
-        "otherCurrentAssets",
-        "totalCurrentAssets",
-        "propertyPlantEquipmentNet",
-        "intangibleAssets",
-        "otherNonCurrentLiabilities",
-        "totalNonCurrentLiabilities",
-        "longTermDebt",
-        "accountPayables",
-        "totalLiabilities",
+        ("cashAndCashEquivalents", format_function),
+        ("shortTermInvestments", format_function),
+        ("netReceivables", format_function),
+        ("inventory", format_function),
+        ("otherCurrentAssets", format_function),
+        ("totalCurrentAssets", format_function),
+        ("propertyPlantEquipmentNet", format_function),
+        ("intangibleAssets", format_function),
+        ("otherNonCurrentLiabilities", format_function),
+        ("totalNonCurrentLiabilities", format_function),
+        ("longTermDebt", format_function),
+        ("accountPayables", format_function),
+        ("totalLiabilities", format_function)
     ]
 
-    return_data = table_from_api_data(api_ids_to_keep, thousands_base, ticker, period, api_data)
+    return_data = table_from_api_data(api_ids_to_keep, api_data)
     return json.dumps(return_data)
 
 
 @app.route("/income_statement")
 def income_statement():
-    ticker = request.args.get("ticker")
-    period = request.args.get("period")
-    api_data = retrieve_from_api("income-statement", ticker, args=["limit=5", f"period={period}"])
+    g.ticker = request.args.get("ticker")
+    g.period = request.args.get("period")
+    api_data = retrieve_from_api("income-statement", g.ticker, args=["limit=5", f"period={g.period}"])
 
     first_value = api_data[-1]["revenue"]
-    thousands_base = get_thousands_base(first_value) - 1
+    g.thousands_base = get_thousands_base(first_value) - 1
     
+    format_function = lambda n: millify(
+        n, g.thousands_base, include_suffix=False)
+
+    format_function_base_1 = lambda n: millify(
+        n, 1, include_suffix=False)
+
     # TODO gross profit ratio
-    income_statement_names = [
-        "revenue",
-        "costOfRevenue",
-        "grossProfit",
-        "operatingExpenses",
-        "ebitda",
-        "netIncome",
+    api_data_ids = [
+        ("revenue", format_function),
+        ("costOfRevenue", format_function),
+        ("grossProfit", format_function),
+        ("operatingExpenses", format_function),
+        ("ebitda", format_function),
+        ("netIncome", format_function),
+        ("eps",  format_function_base_1),
+        ("epsdiluted", format_function_base_1)
     ]
 
-    return_map = table_from_api_data(income_statement_names, thousands_base, ticker, period, api_data)
-    
-    earnings_names = ["eps", "epsdiluted"]
-    earnings_map = table_from_api_data(earnings_names, 1, ticker, period, api_data, include_date=False)
-    return_map["Data"].extend(earnings_map["Data"])
+    return_map = table_from_api_data(api_data_ids, api_data)
 
     return json.dumps(return_map)
 
 
 @app.route("/cash_flow")
 def cash_flow():
-    ticker = request.args.get("ticker")
-    period = request.args.get("period")
-    api_data = retrieve_from_api("cash-flow-statement", ticker, args=["limit=5", f"period={period}"])
+    g.ticker = request.args.get("ticker")
+    g.period = request.args.get("period")
+    api_data = retrieve_from_api("cash-flow-statement", g.ticker, args=["limit=5", f"period={g.period}"])
 
     first_value = api_data[-1]["netIncome"]
-    thousands_base = get_thousands_base(first_value) - 1
+    g.thousands_base = get_thousands_base(first_value) - 1
     
-    cash_flow_names = [
-        "netIncome",
-        "operatingCashFlow",
-        "netCashUsedForInvestingActivites",
-        "freeCashFlow",
+    format_function = lambda n: millify(
+        n, g.thousands_base, include_suffix=False)
+    
+    api_data_ids = [
+        ("netIncome", format_function),
+        ("operatingCashFlow", format_function),
+        ("netCashUsedForInvestingActivites", format_function),
+        ("freeCashFlow", format_function)
     ]
     
-    return_map = table_from_api_data(cash_flow_names, thousands_base, ticker, period, api_data)
+    return_map = table_from_api_data(api_data_ids, api_data)
     return json.dumps(return_map)
 
 
 # TODO refactor to allow different format_functions
-def table_from_api_data(api_ids_to_keep, thousands_base, ticker, period, api_data, include_date=True):
+# TODO move request.args.get stuff into here
+def table_from_api_data(api_ids_and_format_functions, api_data):
     return_map = {}
-    return_map["Base"] = thousands_base
+    return_map["Base"] = g.thousands_base
 
-    format_function = lambda n: millify(
-        n, thousands_base, include_suffix=False)
-    
     return_data = []
     for api_data_column in api_data:
         return_data_column = {}
 
-        if include_date:
-            date = api_data_column["date"].split("-")
-            month, year = date[1], date[0][-2:]
-            return_data_column["filingDate"] = month + "/" + year
+        date = api_data_column["date"].split("-")
+        month, year = date[1], date[0][-2:]
+        return_data_column["filingDate"] = month + "/" + year
 
-        for row_name in api_ids_to_keep:
+        for row_name, format_function in api_ids_and_format_functions:
             return_data_column[row_name] = format_function(api_data_column[row_name])
 
         return_data.insert(0, return_data_column)
 
     return_map["Data"] = return_data
-
-    g.ticker = ticker
     g.data = return_map["Data"]
-    g.base = str(thousands_base)
-    g.period = str(period)
 
     return return_map
 
@@ -168,10 +171,10 @@ def table_from_api_data(api_ids_to_keep, thousands_base, ticker, period, api_dat
 def after_request(response):
     def after_balance_sheet():
         for row in g.data:
-            row['base'] = g.base
+            row['base'] = g.thousands_base
             row['ticker'] = g.ticker
             row['filingPeriod'] = g.period
-            insert_into_database(row, 'BalanceSheet')
+            # insert_into_database(row, 'BalanceSheet')
 
     request_to_function_map = {"/balance_sheet": after_balance_sheet}
 
