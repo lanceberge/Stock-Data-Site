@@ -58,29 +58,25 @@ def balance_sheet():
     g.ticker = request.args.get("ticker")
     g.period = request.args.get("period")
     
-    # TODO identify the number of periods needed based on the most recent date in the db
     api_data = retrieve_from_api("balance-sheet-statement", g.ticker, args=["limit=5", f"period={g.period}"])
 
     first_value = api_data[-1]["cashAndCashEquivalents"]
     g.thousands_base = get_thousands_base(first_value) - 1
-    
-    format_function = lambda n: millify(
-        n, g.thousands_base, include_suffix=False)
 
     api_ids_to_keep = [
-        ("cashAndCashEquivalents", format_function),
-        ("shortTermInvestments", format_function),
-        ("netReceivables", format_function),
-        ("inventory", format_function),
-        ("otherCurrentAssets", format_function),
-        ("totalCurrentAssets", format_function),
-        ("propertyPlantEquipmentNet", format_function),
-        ("intangibleAssets", format_function),
-        ("otherNonCurrentLiabilities", format_function),
-        ("totalNonCurrentLiabilities", format_function),
-        ("longTermDebt", format_function),
-        ("accountPayables", format_function),
-        ("totalLiabilities", format_function)
+        ("cashAndCashEquivalents", g.thousands_base),
+        ("shortTermInvestments", g.thousands_base),
+        ("netReceivables", g.thousands_base),
+        ("inventory", g.thousands_base),
+        ("otherCurrentAssets", g.thousands_base),
+        ("totalCurrentAssets", g.thousands_base),
+        ("propertyPlantEquipmentNet", g.thousands_base),
+        ("intangibleAssets", g.thousands_base),
+        ("otherNonCurrentLiabilities", g.thousands_base),
+        ("totalNonCurrentLiabilities", g.thousands_base),
+        ("longTermDebt", g.thousands_base),
+        ("accountPayables", g.thousands_base),
+        ("totalLiabilities", g.thousands_base)
     ]
 
     return_data = table_from_api_data(api_ids_to_keep, api_data)
@@ -96,22 +92,16 @@ def income_statement():
     first_value = api_data[-1]["revenue"]
     g.thousands_base = get_thousands_base(first_value) - 1
     
-    format_function = lambda n: millify(
-        n, g.thousands_base, include_suffix=False)
-
-    format_function_base_1 = lambda n: millify(
-        n, 1, include_suffix=False)
-
-    # TODO gross profit ratio
     api_data_ids = [
-        ("revenue", format_function),
-        ("costOfRevenue", format_function),
-        ("grossProfit", format_function),
-        ("operatingExpenses", format_function),
-        ("ebitda", format_function),
-        ("netIncome", format_function),
-        ("eps",  format_function_base_1),
-        ("epsdiluted", format_function_base_1)
+        ("revenue", g.thousands_base),
+        ("costOfRevenue", g.thousands_base),
+        ("grossProfit", g.thousands_base),
+        ("grossProfitRatio", 1),
+        ("operatingExpenses", g.thousands_base),
+        ("ebitda", g.thousands_base),
+        ("netIncome", g.thousands_base),
+        ("eps",  1),
+        ("epsdiluted", 1)
     ]
 
     return_map = table_from_api_data(api_data_ids, api_data)
@@ -132,22 +122,21 @@ def cash_flow():
         n, g.thousands_base, include_suffix=False)
     
     api_data_ids = [
-        ("netIncome", format_function),
-        ("operatingCashFlow", format_function),
-        ("netCashUsedForInvestingActivites", format_function),
-        ("freeCashFlow", format_function)
+        ("netIncome", g.thousands_base),
+        ("operatingCashFlow", g.thousands_base),
+        ("netCashUsedForInvestingActivites", g.thousands_base),
+        ("g.thousands_base", format_function)
     ]
     
     return_map = table_from_api_data(api_data_ids, api_data)
     return json.dumps(return_map)
 
 
-# TODO refactor to allow different format_functions
 # TODO move request.args.get stuff into here
+# TODO identify the number of periods needed based on the most recent date in the db
 def table_from_api_data(api_ids_and_format_functions, api_data):
     return_map = {}
     return_map["Base"] = g.thousands_base
-
     return_data = []
     for api_data_column in api_data:
         return_data_column = {}
@@ -156,8 +145,8 @@ def table_from_api_data(api_ids_and_format_functions, api_data):
         month, year = date[1], date[0][-2:]
         return_data_column["filingDate"] = month + "/" + year
 
-        for row_name, format_function in api_ids_and_format_functions:
-            return_data_column[row_name] = format_function(api_data_column[row_name])
+        for row_name, thousands_base in api_ids_and_format_functions:
+            return_data_column[row_name] = millify(api_data_column[row_name], thousands_base, include_suffix=False)
 
         return_data.insert(0, return_data_column)
 
