@@ -55,89 +55,78 @@ def key_statistics():
 
 @app.route("/balance_sheet")
 def balance_sheet():
-    g.ticker = request.args.get("ticker")
-    g.period = request.args.get("period")
-    
-    api_data = retrieve_from_api("balance-sheet-statement", g.ticker, args=["limit=5", f"period={g.period}"])
-
-    first_value = api_data[-1]["cashAndCashEquivalents"]
-    g.thousands_base = get_thousands_base(first_value) - 1
-
-    api_ids_to_keep = [
-        ("cashAndCashEquivalents", g.thousands_base),
-        ("shortTermInvestments", g.thousands_base),
-        ("netReceivables", g.thousands_base),
-        ("inventory", g.thousands_base),
-        ("otherCurrentAssets", g.thousands_base),
-        ("totalCurrentAssets", g.thousands_base),
-        ("propertyPlantEquipmentNet", g.thousands_base),
-        ("intangibleAssets", g.thousands_base),
-        ("otherNonCurrentLiabilities", g.thousands_base),
-        ("totalNonCurrentLiabilities", g.thousands_base),
-        ("longTermDebt", g.thousands_base),
-        ("accountPayables", g.thousands_base),
-        ("totalLiabilities", g.thousands_base)
+    api_ids = [
+        "cashAndCashEquivalents",
+        "shortTermInvestments",
+        "netReceivables",
+        "inventory",
+        "otherCurrentAssets",
+        "totalCurrentAssets",
+        "propertyPlantEquipmentNet",
+        "intangibleAssets",
+        "otherNonCurrentLiabilities",
+        "totalNonCurrentLiabilities",
+        "longTermDebt",
+        "accountPayables",
+        "totalLiabilities"
     ]
 
-    return_data = table_from_api_data(api_ids_to_keep, api_data)
+    return_data = table_from_api_data("balance-sheet-statement", api_ids)
     return json.dumps(return_data)
 
 
 @app.route("/income_statement")
 def income_statement():
-    g.ticker = request.args.get("ticker")
-    g.period = request.args.get("period")
-    api_data = retrieve_from_api("income-statement", g.ticker, args=["limit=5", f"period={g.period}"])
-
-    first_value = api_data[-1]["revenue"]
-    g.thousands_base = get_thousands_base(first_value) - 1
-    
-    api_data_ids = [
-        ("revenue", g.thousands_base),
-        ("costOfRevenue", g.thousands_base),
-        ("grossProfit", g.thousands_base),
-        ("grossProfitRatio", 1),
-        ("operatingExpenses", g.thousands_base),
-        ("ebitda", g.thousands_base),
-        ("netIncome", g.thousands_base),
-        ("eps",  1),
-        ("epsdiluted", 1)
+    api_ids = [
+        "revenue",
+        "costOfRevenue",
+        "grossProfit",
+        "grossProfitRatio",
+        "operatingExpenses",
+        "ebitda",
+        "netIncome",
+        "eps",
+        "epsdiluted",
     ]
 
-    return_map = table_from_api_data(api_data_ids, api_data)
+    thousands_bases = {
+        "grossProfitRatio": 1,
+        "eps":  1,
+        "epsdiluted": 1
+    }
+
+    return_map = table_from_api_data("income-statement", api_ids, thousands_bases)
 
     return json.dumps(return_map)
 
 
 @app.route("/cash_flow")
 def cash_flow():
-    g.ticker = request.args.get("ticker")
-    g.period = request.args.get("period")
-    api_data = retrieve_from_api("cash-flow-statement", g.ticker, args=["limit=5", f"period={g.period}"])
-
-    first_value = api_data[-1]["netIncome"]
-    g.thousands_base = get_thousands_base(first_value) - 1
-    
-    format_function = lambda n: millify(
-        n, g.thousands_base, include_suffix=False)
-    
-    api_data_ids = [
-        ("netIncome", g.thousands_base),
-        ("operatingCashFlow", g.thousands_base),
-        ("netCashUsedForInvestingActivites", g.thousands_base),
-        ("g.thousands_base", format_function)
+    api_ids = [
+        "netIncome",
+        "operatingCashFlow",
+        "netCashUsedForInvestingActivites",
+        "freeCashFlow"
     ]
     
-    return_map = table_from_api_data(api_data_ids, api_data)
+    return_map = table_from_api_data("cash-flow-statement", api_ids)
     return json.dumps(return_map)
 
 
-# TODO move request.args.get stuff into here
+# TODO doc
 # TODO identify the number of periods needed based on the most recent date in the db
-def table_from_api_data(api_ids_and_format_functions, api_data):
+def table_from_api_data(api_endpoint_name, api_ids, thousands_bases=None):
+    g.ticker = request.args.get("ticker")
+    g.period = request.args.get("period")
+    api_data = retrieve_from_api(api_endpoint_name, g.ticker, args=["limit=5", f"period={g.period}"])
+
     return_map = {}
-    return_map["Base"] = g.thousands_base
     return_data = []
+
+    first_value = api_data[-1][api_ids[0]]
+    default_thousands_base = get_thousands_base(first_value) - 1
+    return_map["Base"] = default_thousands_base
+
     for api_data_column in api_data:
         return_data_column = {}
 
@@ -145,13 +134,18 @@ def table_from_api_data(api_ids_and_format_functions, api_data):
         month, year = date[1], date[0][-2:]
         return_data_column["filingDate"] = month + "/" + year
 
-        for row_name, thousands_base in api_ids_and_format_functions:
-            return_data_column[row_name] = millify(api_data_column[row_name], thousands_base, include_suffix=False)
+        for api_id in api_ids:
+            thousands_base = default_thousands_base
+            if thousands_bases and api_id in thousands_bases:
+                thousands_base = thousands_bases[api_id]
+
+            return_data_column[api_id] = millify(api_data_column[api_id], thousands_base, include_suffix=False)
 
         return_data.insert(0, return_data_column)
 
     return_map["Data"] = return_data
     g.data = return_map["Data"]
+    g.thousands_base = default_thousands_base
 
     return return_map
 
