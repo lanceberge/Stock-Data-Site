@@ -101,7 +101,6 @@ def income_statement():
     }
 
     return_map = table_from_api_endpoint("income-statement", thousands_bases)
-
     return json.dumps(return_map)
 
 
@@ -202,7 +201,7 @@ def format_data(data, thousands_bases, default_thousands_base):
 
 @app.after_request
 def after_request(response):
-    included_endpoints = {"/balance_sheet", "/income_statmenet", "/cash_flow"}
+    included_endpoints = {"/balance_sheet", "/income_statement", "/cash_flow"}
 
     if request.path in included_endpoints:
         for row in g.data:
