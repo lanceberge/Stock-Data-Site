@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, g
-import sqlite3
 import requests
 import json
 from datetime import datetime, date
@@ -119,8 +118,6 @@ def cash_flow():
     return json.dumps(return_map)
 
 
-# TODO doc
-# TODO identify the number of periods needed based on the most recent date in the db
 def table_from_api_endpoint(api_endpoint_name, thousands_bases=None):
     g.ticker = request.args.get("ticker")
     g.period = request.args.get("period")
@@ -139,7 +136,8 @@ def table_from_api_endpoint(api_endpoint_name, thousands_bases=None):
 
         months_per_period = 3 if g.period == "monthly" else 12
 
-        api_entries_to_retrieve = get_month_difference(most_recent_db_date, todays_date) % months_per_period
+        monthly_difference = get_month_difference(most_recent_db_date, todays_date)
+        api_entries_to_retrieve = monthly_difference % months_per_period if monthly_difference >= months_per_period else 0
         
         if most_recent_db_date.month % months_per_period != 0:
             api_entries_to_retrieve += 1
