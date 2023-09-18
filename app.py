@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, g
 import sqlite3
 import requests
 import json
+from datetime import datetime, date
 from util.number_formatting import *
 from util.database_management import *
 
@@ -55,7 +56,9 @@ def key_statistics():
 
 @app.route("/balance_sheet")
 def balance_sheet():
-    api_ids = [
+    g.db_table_name = "BalanceSheet"
+
+    g.column_names = [
         "cashAndCashEquivalents",
         "shortTermInvestments",
         "netReceivables",
@@ -71,13 +74,15 @@ def balance_sheet():
         "totalLiabilities"
     ]
 
-    return_data = table_from_api_data("balance-sheet-statement", api_ids)
+    return_data = table_from_api_endpoint("balance-sheet-statement")
     return json.dumps(return_data)
 
 
 @app.route("/income_statement")
 def income_statement():
-    api_ids = [
+    g.db_table_name = "IncomeStatement"
+
+    g.column_names = [
         "revenue",
         "costOfRevenue",
         "grossProfit",
@@ -95,74 +100,117 @@ def income_statement():
         "epsdiluted": 1
     }
 
-    return_map = table_from_api_data("income-statement", api_ids, thousands_bases)
+    return_map = table_from_api_endpoint("income-statement", thousands_bases)
 
     return json.dumps(return_map)
 
 
 @app.route("/cash_flow")
 def cash_flow():
-    api_ids = [
+    g.db_table_name = "CashFlowStatement"
+
+    g.column_names = [
         "netIncome",
         "operatingCashFlow",
         "netCashUsedForInvestingActivites",
         "freeCashFlow"
     ]
     
-    return_map = table_from_api_data("cash-flow-statement", api_ids)
+    return_map = table_from_api_endpoint("cash-flow-statement")
     return json.dumps(return_map)
 
 
 # TODO doc
 # TODO identify the number of periods needed based on the most recent date in the db
-def table_from_api_data(api_endpoint_name, api_ids, thousands_bases=None):
+def table_from_api_endpoint(api_endpoint_name, thousands_bases=None):
     g.ticker = request.args.get("ticker")
     g.period = request.args.get("period")
-    api_data = retrieve_from_api(api_endpoint_name, g.ticker, args=["limit=5", f"period={g.period}"])
+
+    query_columns = ["filingDate"] + g.column_names
+    query_filters = f"WHERE filingPeriod='{g.period}' AND ticker='{g.ticker}' ORDER BY filingDate DESC LIMIT 5"
+    db_data = select_from_table(g.db_table_name, query_columns, query_filters)
+
+    # compute the number of entries needed to pull from the api
+    most_recent_db_date = None
+
+    api_entries_to_retrieve = 5
+    if len(db_data) != 0:
+        most_recent_db_date = datetime.strptime(db_data[0]["filingDate"], '%Y-%m-%d')
+        todays_date = date.today()
+
+        months_per_period = 3 if g.period == "monthly" else 12
+
+        api_entries_to_retrieve = get_month_difference(most_recent_db_date, todays_date) % months_per_period
+        
+        if most_recent_db_date.month % months_per_period != 0:
+            api_entries_to_retrieve += 1
+
+    api_data = []
+    if api_entries_to_retrieve > 0:
+        api_data = retrieve_from_api(api_endpoint_name, g.ticker, args=[f"limit={api_entries_to_retrieve}", f"period={g.period}"])
+
+        # rename date to filingDate
+        for row in api_data:
+            row['filingDate'] = row.pop('date')
+        
+        # if a date was pulled from the api that is already in the database
+        oldest_api_date = datetime.strptime(api_data[-1]['filingDate'], '%Y-%m-%d')
+        if most_recent_db_date and get_month_difference(most_recent_db_date, oldest_api_date) == 0:
+            del api_data[-1]
+
+        # set this as the data to be inserted into the database
+        g.data = api_data
+    
+    # join db and api_data, then format them
+    unformatted_data = db_data + api_data
 
     return_map = {}
-    return_data = []
 
-    first_value = api_data[-1][api_ids[0]]
+    first_value = unformatted_data[-1][g.column_names[0]]
     default_thousands_base = get_thousands_base(first_value) - 1
     return_map["Base"] = default_thousands_base
 
-    for api_data_column in api_data:
-        return_data_column = {}
+    formatted_data = format_data(unformatted_data, thousands_bases, default_thousands_base)
 
-        date = api_data_column["date"].split("-")
-        month, year = date[1], date[0][-2:]
-        return_data_column["filingDate"] = month + "/" + year
-
-        for api_id in api_ids:
-            thousands_base = default_thousands_base
-            if thousands_bases and api_id in thousands_bases:
-                thousands_base = thousands_bases[api_id]
-
-            return_data_column[api_id] = millify(api_data_column[api_id], thousands_base, include_suffix=False)
-
-        return_data.insert(0, return_data_column)
-
-    return_map["Data"] = return_data
-    g.data = return_map["Data"]
+    return_map["Data"] = formatted_data
     g.thousands_base = default_thousands_base
 
     return return_map
 
 
+def format_data(data, thousands_bases, default_thousands_base):
+    return_data = []
+    
+    for column in data:
+        return_data_column = {}
+
+        filingDate = column["filingDate"].split("-")
+        month, year = filingDate[1], filingDate[0][-2:]
+        return_data_column["filingDate"] = month + "/" + year
+
+        for column_name in g.column_names:
+            thousands_base = default_thousands_base
+            if thousands_bases and column_name in thousands_bases:
+                thousands_base = thousands_bases[column_name]
+
+            return_data_column[column_name] = millify(column[column_name], thousands_base, include_suffix=False)
+
+        return_data.insert(0, return_data_column)
+
+    return return_data
+
+
 @app.after_request
 def after_request(response):
-    def after_balance_sheet():
+    included_endpoints = {"/balance_sheet", "/income_statmenet", "/cash_flow"}
+
+    if request.path in included_endpoints:
         for row in g.data:
-            row['base'] = g.thousands_base
+            column_names = ['filingDate', 'ticker', 'filingPeriod'] + g.column_names
             row['ticker'] = g.ticker
             row['filingPeriod'] = g.period
-            # insert_into_database(row, 'BalanceSheet')
-
-    request_to_function_map = {"/balance_sheet": after_balance_sheet}
-
-    if request.path in request_to_function_map:
-        request_to_function_map[request.path]()
+            values = [row[column_name] for column_name in column_names]
+            insert_into_table(column_names, values, g.db_table_name)
 
     return response
 
@@ -170,6 +218,12 @@ def after_request(response):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+def get_month_difference(d1, d2):
+    diff = (d2.year - d1.year) * 12 + (d2.month - d1.month)
+    
+    return diff if diff >= 0 else -diff
 
 
 if __name__ == "__main__":
