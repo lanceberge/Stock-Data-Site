@@ -5,7 +5,7 @@ from datetime import datetime, date
 from util.number_formatting import *
 from util.database_management import *
 
-app = Flask(__name__)
+application = Flask(__name__)
 base_url = "https://financialmodelingprep.com/api/v3/"
 api_key = None
 with open(".api_key", "r") as f:
@@ -25,7 +25,7 @@ def retrieve_from_api(metric, ticker, args=None):
     return data_dict
 
 
-@app.route("/key_statistics")
+@application.route("/key_statistics")
 def key_statistics():
     ticker = request.args.get("ticker")
     
@@ -53,7 +53,7 @@ def key_statistics():
     return json.dumps(return_map)
 
 
-@app.route("/balance_sheet")
+@application.route("/balance_sheet")
 def balance_sheet():
     g.db_table_name = "BalanceSheet"
 
@@ -77,7 +77,7 @@ def balance_sheet():
     return json.dumps(return_data)
 
 
-@app.route("/income_statement")
+@application.route("/income_statement")
 def income_statement():
     g.db_table_name = "IncomeStatement"
 
@@ -103,7 +103,7 @@ def income_statement():
     return json.dumps(return_map)
 
 
-@app.route("/cash_flow")
+@application.route("/cash_flow")
 def cash_flow():
     g.db_table_name = "CashFlowStatement"
 
@@ -119,8 +119,12 @@ def cash_flow():
 
 
 def table_from_api_endpoint(api_endpoint_name, thousands_bases=None):
+    """
+    Combine data from the api and data that's already present in the database
+    """
     g.ticker = request.args.get("ticker")
     g.period = request.args.get("period")
+    g.data = []
 
     query_columns = ["filingDate"] + g.column_names
     query_filters = f"WHERE filingPeriod='{g.period}' AND ticker='{g.ticker}' ORDER BY filingDate DESC LIMIT 5"
@@ -128,8 +132,8 @@ def table_from_api_endpoint(api_endpoint_name, thousands_bases=None):
 
     # compute the number of entries needed to pull from the api
     most_recent_db_date = None
-
     api_entries_to_retrieve = 5
+
     if len(db_data) != 0:
         most_recent_db_date = datetime.strptime(db_data[0]["filingDate"], '%Y-%m-%d')
         todays_date = date.today()
@@ -137,10 +141,12 @@ def table_from_api_endpoint(api_endpoint_name, thousands_bases=None):
         months_per_period = 3 if g.period == "monthly" else 12
 
         monthly_difference = get_month_difference(most_recent_db_date, todays_date)
-        api_entries_to_retrieve = monthly_difference % months_per_period if monthly_difference >= months_per_period else 0
+        # api_entries_to_retrieve = monthly_difference % months_per_period if monthly_difference >= months_per_period else 0
         
-        if most_recent_db_date.month % months_per_period != 0:
-            api_entries_to_retrieve += 1
+        # if most_recent_db_date.month % months_per_period != 0:
+        #     api_entries_to_retrieve += 1
+
+        api_entries_to_retrieve = 5 if monthly_difference >= months_per_period else 0
 
     api_data = []
     if api_entries_to_retrieve > 0:
@@ -150,17 +156,21 @@ def table_from_api_endpoint(api_endpoint_name, thousands_bases=None):
         for row in api_data:
             row['filingDate'] = row.pop('date')
         
-        # if a date was pulled from the api that is already in the database
         oldest_api_date = datetime.strptime(api_data[-1]['filingDate'], '%Y-%m-%d')
-        if most_recent_db_date and get_month_difference(most_recent_db_date, oldest_api_date) == 0:
-            del api_data[-1]
+
+        # delete all api_dates before or equal to most_recent_db_date
+        if most_recent_db_date:
+            while api_data and datetime.strptime(api_data[-1]['filingDate'], '%Y-%m-%d') <= most_recent_db_date:
+                del api_data[-1]
+
+        # while most_recent_db_date and get_month_difference(most_recent_db_date, oldest_api_date) == 0:
+        #     del api_data[-1]
 
         # set this as the data to be inserted into the database
         g.data = api_data
     
     # join db and api_data, then format them
     unformatted_data = db_data + api_data
-
     return_map = {}
 
     first_value = unformatted_data[-1][g.column_names[0]]
@@ -197,8 +207,9 @@ def format_data(data, thousands_bases, default_thousands_base):
     return return_data
 
 
-@app.after_request
+@application.after_request
 def after_request(response):
+    # TODO implement key_statistics
     included_endpoints = {"/balance_sheet", "/income_statement", "/cash_flow"}
 
     if request.path in included_endpoints:
@@ -212,7 +223,7 @@ def after_request(response):
     return response
 
 
-@app.route("/")
+@application.route("/")
 def index():
     return render_template("index.html")
 
@@ -224,4 +235,4 @@ def get_month_difference(d1, d2):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    application.run(debug=True)
