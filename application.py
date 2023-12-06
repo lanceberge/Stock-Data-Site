@@ -29,18 +29,20 @@ def retrieve_from_api(metric, ticker, args=None):
 def key_statistics():
     ticker = request.args.get("ticker")
     
-    # TODO profit margins, EPS, FCF
     price_data = retrieve_from_api("quote-short", ticker)[0]
     ttm_data = retrieve_from_api("key-metrics-ttm", ticker)[0]
     market_cap_data = retrieve_from_api("market-capitalization", ticker)[0]
+    ratios_ttm = retrieve_from_api("ratios-ttm", ticker)[0]
 
     data = {}
     data["price"] = millify(price_data["price"])
     data["enterpriseValueOverEBITDATTM"] = millify(ttm_data["enterpriseValueOverEBITDATTM"], accounting_style=False)
-    data["peRatioTTM"] = two_decimals(ttm_data["peRatioTTM"])
+    data["earningsYieldTTM"] = percentify(ttm_data["earningsYieldTTM"])
     data["pbRatioTTM"] = two_decimals(ttm_data["pbRatioTTM"])
     data["priceToSalesRatioTTM"] = two_decimals(ttm_data["priceToSalesRatioTTM"])
     data["roicTTM"] = percentify(ttm_data["roicTTM"])
+    data["netProfitMarginTTM"] = percentify(ratios_ttm["netProfitMarginTTM"])
+    data["grossProfitMarginTTM"] = percentify(ratios_ttm["grossProfitMarginTTM"])
     data["dividendYieldTTM"] = percentify(ttm_data["dividendYieldTTM"])
     data["payoutRatioTTM"] = percentify(ttm_data["payoutRatioTTM"])
     data["marketCap"] = millify(market_cap_data["marketCap"], include_suffix=True)
