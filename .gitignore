@@ -2,3 +2,6 @@ planning.org
 .api_key
 __pycache__
 database.db
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
