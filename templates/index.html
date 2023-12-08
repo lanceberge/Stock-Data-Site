@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Stock Data</title>
+    <title>omniscience</title>
     <link
       href="https://fonts.googleapis.com/css?family=Open+Sans"
       rel="stylesheet"
@@ -21,7 +21,7 @@
   <body>
     <div class="header full-width">
       <div class="title-box flex center-content full-width">
-        <h2 class="flex-1">Title</h2>
+        <h2 class="flex-1">omniscience</h2>
         <div class="search-container flex center-content center-items">
           <i class="fa fa-search search-icon"></i>
           <input
@@ -70,20 +70,7 @@
               </span>
             </th>
           </tr>
-          <tr>
-            <th id="EPS" class="tooltip-trigger">
-              EPS
-              <span class="tooltip-info">
-                <a
-                  href="https://www.investopedia.com/terms/e/eps.asp"
-                  target="_blank"
-                >
-                  Net profit / shares outstanding
-                </a>
-              </span>
-            </th>
-          </tr>
-          <tr>
+          <!-- <tr>
             <th id="Free Cash Flow" class="tooltip-trigger">
               Free Cash Flow
               <span class="tooltip-info">
@@ -95,7 +82,7 @@
                 </a>
               </span>
             </th>
-          </tr>
+          </tr> -->
         </table>
         <h3>TTM Metrics</h3>
         <table>
@@ -113,11 +100,24 @@
             </th>
           </tr>
           <tr>
-            <th id="profitMargin" class="tooltip-trigger">
-              Profit Margins
+            <th id="earningsYieldTTM" class="tooltip-trigger">
+              Earnings Yield
               <span class="tooltip-info">
                 <a
-                  href="https://www.investopedia.com/terms/p/profitmargin.asp"
+                  href="https://www.investopedia.com/terms/e/earningsyield.asp"
+                  target="_blank"
+                >
+                  Earnings per share / price per share
+                </a>
+              </span>
+            </th>
+          </tr>
+          <tr>
+            <th id="netProfitMarginTTM" class="tooltip-trigger">
+              Net Profit Margin
+              <span class="tooltip-info">
+                <a
+                  href="https://www.investopedia.com/terms/n/net_margin.asp"
                   target="_blank"
                 >
                   Percentage of revenue kept as profit
@@ -126,14 +126,14 @@
             </th>
           </tr>
           <tr>
-            <th id="peRatioTTM" class="tooltip-trigger">
-              P/E
+            <th id="grossProfitMarginTTM" class="tooltip-trigger">
+              Gross Profit Margin
               <span class="tooltip-info">
                 <a
-                  href="https://www.investopedia.com/terms/p/price-earningsratio.asp"
+                  href="https://www.investopedia.com/terms/g/gross_profit_margin.asp"
                   target="_blank"
                 >
-                  Share Price / EPS
+                  Percentage of revenue kept as profit
                 </a>
               </span>
             </th>
@@ -254,9 +254,9 @@
         </table>
         <h3>Liabilities</h3>
         <table>
-          <tr>
+          <!-- <tr>
             <th>Date</th>
-          </tr>
+          </tr> -->
           <tr>
             <th id="longTermDebt">Long-Term Debt</th>
           </tr>
@@ -296,7 +296,7 @@
             <th id="grossProfit">Gross Profit</th>
           </tr>
           <tr>
-            <th id="grossProfitRatio">Gross Profit Ratio</th>
+            <th id="grossProfitRatio">Gross Profit Margin</th>
           </tr>
           <tr>
             <th id="operatingExpenses">Operating Expenses</th>
